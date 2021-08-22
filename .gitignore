@@ -13,3 +13,6 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+mux/example
+internal/buffer/example
+internal/scheduler/example
