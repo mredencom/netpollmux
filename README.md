@@ -5,7 +5,7 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/php2go/netpollmux)](https://goreportcard.com/report/github.com/php2go/netpollmux)
 [![LICENSE](https://img.shields.io/github/license/php2go/netpollmux.svg?style=flat-square)](https://github.com/php2go/netpollmux/blob/master/LICENSE)
 
-Package netpoll implements a network poller based on epoll/kqueue.
+Package netpollmux implements a network poller based on epoll/kqueue.
 
 ## Features
 
@@ -19,7 +19,7 @@ Package netpoll implements a network poller based on epoll/kqueue.
 
 **Comparison to other packages.**
 
-|Package| [net](https://github.com/golang/go/tree/master/src/net "net")| [netpoll](https://github.com/php2go/netpollmux "netpoll")|[gnet](https://github.com/panjf2000/gnet "gnet")|[evio](https://github.com/tidwall/evio "evio")|
+|Package| [net](https://github.com/golang/go/tree/master/src/net "net")| [netpollmux](https://github.com/php2go/netpollmux "netpoll")|[gnet](https://github.com/panjf2000/gnet "gnet")|[evio](https://github.com/tidwall/evio "evio")|
 |:--:|:--|:--|:--|:--|
 |Low memory usage|No|Yes|Yes|Yes|
 |Non-blocking I/O|No|Yes|Yes|Yes|
