@@ -7,22 +7,24 @@ import (
 	"net/http"
 	"netpollmux"
 	"netpollmux/mux"
+	"netpollmux/render"
 	"netpollmux/response"
 	"sync"
 )
+
 // https://github.com/hslam?tab=repositories
 func main() {
-	m := mux.NewRoute()
+	m := mux.NewRouter()
+	r := render.NewRender()
+	r.GzipAll().DeflateAll().Charset("utf-8")
 	//m := gmux.NewRouter()
-	m.HandleFunc("/hello/:id", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte(`Hello World`))
-		return
-		//fmt.Fprintf(w, "Category: %v\n", params)
-
+	m.HandleFunc("/hello/:id", func(w http.ResponseWriter, req *http.Request) {
+		r.JSON(w, req, []string{"compress"}, http.StatusOK)
 	})
-	if err := ListenAndServe(":8080", m); err != nil {
-		log.Fatal("启动失败")
-	}
+	log.Fatal(m.Run(":8080"))
+	//if err := ListenAndServe(":8080", m); err != nil {
+	//	log.Fatal("启动失败")
+	//}
 }
 
 type Context struct {
