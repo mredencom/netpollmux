@@ -6,6 +6,7 @@ import (
 	"net"
 	"net/http"
 	"netpollmux"
+	"netpollmux/log"
 	"netpollmux/request"
 	"netpollmux/response"
 	"sync"
@@ -56,8 +57,10 @@ func (m *Router) SetPoll(poll bool) {
 func (m *Router) Run(addr string) error {
 	ln, err := net.Listen("tcp", addr)
 	if err != nil {
+		log.Error(err.Error())
 		return err
 	}
+	log.Info("serve success")
 	return m.Serve(ln)
 }
 
