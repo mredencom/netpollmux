@@ -2,7 +2,7 @@ package socket
 
 import (
 	"io"
-	"netpollmux/mux/writer"
+	"netpollmux/internal/writer"
 	"strings"
 	"sync"
 	"sync/atomic"

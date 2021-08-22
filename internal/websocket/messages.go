@@ -2,7 +2,7 @@ package websocket
 
 import (
 	"errors"
-	"netpollmux/mux/writer"
+	"netpollmux/internal/writer"
 	"unsafe"
 )
 

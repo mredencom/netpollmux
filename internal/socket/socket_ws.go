@@ -3,7 +3,7 @@ package socket
 import (
 	"crypto/tls"
 	"net"
-	websocket2 "netpollmux/mux/websocket"
+	"netpollmux/internal/websocket"
 	"netpollmux/netpoll"
 )
 
@@ -19,7 +19,7 @@ type WS struct {
 
 // WSConn implements the Conn interface.
 type WSConn struct {
-	*websocket2.Conn
+	*websocket.Conn
 }
 
 // Messages returns a new Messages.
@@ -48,7 +48,7 @@ func (t *WS) Scheme() string {
 // Dial connects to an address.
 func (t *WS) Dial(address string) (Conn, error) {
 	var err error
-	conn, err := websocket2.Dial("tcp", address, WSPath, t.Config)
+	conn, err := websocket.Dial("tcp", address, WSPath, t.Config)
 	if err != nil {
 		return nil, err
 	}
@@ -80,7 +80,7 @@ func (l *WSListener) Accept() (Conn, error) {
 	if l.config == nil {
 
 	}
-	ws, err := websocket2.Upgrade(conn, l.config)
+	ws, err := websocket.Upgrade(conn, l.config)
 	if err != nil {
 		return nil, err
 	}
@@ -106,7 +106,7 @@ func (l *WSListener) ServeData(opened func(net.Conn) error, serve func(req []byt
 		return ErrServe
 	}
 	Upgrade := func(conn net.Conn) (netpoll.Context, error) {
-		messages, err := websocket2.Upgrade(conn, l.config)
+		messages, err := websocket.Upgrade(conn, l.config)
 		if err != nil {
 			conn.Close()
 			return nil, err
@@ -115,7 +115,7 @@ func (l *WSListener) ServeData(opened func(net.Conn) error, serve func(req []byt
 		return messages, nil
 	}
 	Serve := func(context netpoll.Context) error {
-		ws := context.(*websocket2.Conn)
+		ws := context.(*websocket.Conn)
 		msg, err := ws.ReadMessage(nil)
 		if err != nil {
 			return err
@@ -140,7 +140,7 @@ func (l *WSListener) ServeConn(opened func(net.Conn) (Context, error), serve fun
 		return ErrServe
 	}
 	Upgrade := func(conn net.Conn) (netpoll.Context, error) {
-		messages, err := websocket2.Upgrade(conn, l.config)
+		messages, err := websocket.Upgrade(conn, l.config)
 		if err != nil {
 			conn.Close()
 			return nil, err
@@ -164,7 +164,7 @@ func (l *WSListener) ServeMessages(opened func(Messages) (Context, error), serve
 		return ErrServe
 	}
 	Upgrade := func(conn net.Conn) (netpoll.Context, error) {
-		messages, err := websocket2.Upgrade(conn, l.config)
+		messages, err := websocket.Upgrade(conn, l.config)
 		if err != nil {
 			conn.Close()
 			return nil, err

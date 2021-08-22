@@ -4,7 +4,7 @@ import (
 	"io"
 	"math/rand"
 	"net"
-	"netpollmux/mux/writer"
+	"netpollmux/internal/writer"
 	"runtime"
 	"sync"
 	"sync/atomic"
