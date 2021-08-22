@@ -1,9 +1,9 @@
 package main
 
 import (
+	"github.com/php2go/netpollmux/mux"
 	"log"
 	"net/http"
-	"netpollmux/mux"
 )
 
 func main() {

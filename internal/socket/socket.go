@@ -5,9 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"net"
-	"netpollmux/netpoll"
 	"runtime"
 	"strings"
+
+	"github.com/php2go/netpollmux/netpoll"
 )
 
 var numCPU = runtime.NumCPU()

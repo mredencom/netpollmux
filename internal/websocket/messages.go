@@ -2,8 +2,9 @@ package websocket
 
 import (
 	"errors"
-	"netpollmux/internal/writer"
 	"unsafe"
+
+	"github.com/php2go/netpollmux/internal/writer"
 )
 
 // SetConcurrency sets a callback func concurrency for writer.

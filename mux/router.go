@@ -5,9 +5,10 @@ import (
 	"crypto/tls"
 	"net"
 	"net/http"
-	"netpollmux/internal/log"
-	"netpollmux/netpoll"
 	"sync"
+
+	"github.com/php2go/netpollmux/internal/log"
+	"github.com/php2go/netpollmux/netpoll"
 )
 
 // DefaultServer is the default HTTP server.

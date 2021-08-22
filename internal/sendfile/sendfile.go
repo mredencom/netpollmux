@@ -2,8 +2,9 @@ package sendfile
 
 import (
 	"net"
-	mmap2 "netpollmux/internal/mmap"
 	"syscall"
+
+	"github.com/php2go/netpollmux/internal/mmap"
 )
 
 const (
@@ -21,16 +22,16 @@ func sendFile(conn net.Conn, src int, pos, remain int64, maxSize int) (written i
 		if int(remain) < maxSize {
 			n = int(remain)
 		}
-		offset := mmap2.Offset(pos)
+		offset := mmap.Offset(pos)
 		if offset < pos {
 			pos = int64(pos - offset)
 		}
-		b, err = mmap2.Open(src, offset, int(pos)+n, mmap2.READ)
+		b, err = mmap.Open(src, offset, int(pos)+n, mmap.READ)
 		if err != nil {
 			return
 		}
 		n, errno := conn.Write(b[pos : pos+int64(n)])
-		_ = mmap2.Munmap(b)
+		_ = mmap.Munmap(b)
 		if n > 0 {
 			pos += int64(n)
 			written += int64(n)

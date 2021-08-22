@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
+	"github.com/php2go/netpollmux/mux"
 	"log"
 	"net/http"
-	"netpollmux/mux"
 )
 
 func main() {

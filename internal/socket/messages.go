@@ -2,10 +2,11 @@ package socket
 
 import (
 	"io"
-	"netpollmux/internal/writer"
 	"strings"
 	"sync"
 	"sync/atomic"
+
+	"github.com/php2go/netpollmux/internal/writer"
 )
 
 const bufferSize = 65526

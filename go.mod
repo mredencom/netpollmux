@@ -1,3 +1,3 @@
-module netpollmux
+module github.com/php2go/netpollmux
 
-go 1.17
+go 1.15

@@ -3,8 +3,9 @@ package socket
 import (
 	"crypto/tls"
 	"net"
-	"netpollmux/internal/websocket"
-	"netpollmux/netpoll"
+
+	"github.com/php2go/netpollmux/internal/websocket"
+	"github.com/php2go/netpollmux/netpoll"
 )
 
 const (

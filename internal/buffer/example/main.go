@@ -1,7 +1,7 @@
 package main
 
 import (
-	"netpollmux/internal/buffer"
+	"github.com/php2go/netpollmux/internal/buffer"
 )
 
 func main() {

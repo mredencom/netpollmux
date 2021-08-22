@@ -3,7 +3,8 @@ package socket
 import (
 	"crypto/tls"
 	"net"
-	"netpollmux/netpoll"
+
+	"github.com/php2go/netpollmux/netpoll"
 )
 
 // TCP implements the Socket interface.

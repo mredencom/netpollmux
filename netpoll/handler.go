@@ -3,7 +3,6 @@ package netpoll
 import (
 	"errors"
 	"net"
-	"netpollmux"
 	"sync"
 	"sync/atomic"
 )
@@ -126,7 +125,7 @@ func (h *DataHandler) SetUpgrade(upgrade func(net.Conn) (net.Conn, error)) {
 // Upgrade sets the net.Conn to a Context.
 func (h *DataHandler) Upgrade(conn net.Conn) (Context, error) {
 	if h.BufferSize < 1 {
-		h.BufferSize = netpollmux.bufferSize
+		h.BufferSize = bufferSize
 	}
 	if h.HandlerFunc == nil {
 		return nil, ErrHandlerFunc

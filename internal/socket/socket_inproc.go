@@ -2,9 +2,9 @@ package socket
 
 import (
 	"crypto/tls"
+	"github.com/php2go/netpollmux/internal/inproc"
+	"github.com/php2go/netpollmux/netpoll"
 	"net"
-	"netpollmux/internal/inproc"
-	"netpollmux/netpoll"
 )
 
 // INPROC implements the Socket interface.

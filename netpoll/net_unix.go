@@ -7,14 +7,15 @@ import (
 	"errors"
 	"io"
 	"net"
-	"netpollmux/internal/sendfile"
-	"netpollmux/internal/splice"
 	"os"
 	"runtime"
 	"sync"
 	"sync/atomic"
 	"syscall"
 	"time"
+
+	"github.com/php2go/netpollmux/internal/sendfile"
+	"github.com/php2go/netpollmux/internal/splice"
 )
 
 const (

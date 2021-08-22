@@ -1,8 +1,8 @@
 package main
 
 import (
-	"netpollmux/internal/log"
-	"netpollmux/internal/scheduler"
+	"github.com/php2go/netpollmux/internal/log"
+	"github.com/php2go/netpollmux/internal/scheduler"
 	"sync"
 )
 

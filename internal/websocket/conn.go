@@ -4,11 +4,12 @@ import (
 	"io"
 	"math/rand"
 	"net"
-	"netpollmux/internal/writer"
 	"runtime"
 	"sync"
 	"sync/atomic"
 	"time"
+
+	"github.com/php2go/netpollmux/internal/writer"
 )
 
 var gcing int32
