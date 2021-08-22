@@ -1,5 +1,4 @@
 # netpollmux
-
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/php2go/netpollmux)](https://pkg.go.dev/github.com/php2go/netpollmux)
 [![Build Status](https://github.com/php2go/netpollmux/workflows/build/badge.svg)](https://github.com/php2go/netpollmux/actions)
 [![codecov](https://codecov.io/gh/php2go/netpollmux/branch/master/graph/badge.svg)](https://codecov.io/gh/php2go/netpollmux)
@@ -20,34 +19,30 @@ Package netpoll implements a network poller based on epoll/kqueue.
 
 **Comparison to other packages.**
 
-|Package| [net](https://github.com/golang/go/tree/master/src/net "net")
-| [netpoll](https://github.com/php2go/netpollmux "netpoll")|[gnet](https://github.com/panjf2000/gnet "gnet")
-|[evio](https://github.com/tidwall/evio "evio")| |:--:|:--|:--|:--|:--| |Low memory usage|No|Yes|Yes|Yes| |Non-blocking
-I/O|No|Yes|Yes|Yes| |Splice/sendfile|Yes|Yes|No|No| |Rescheduling|Yes|Yes|No|No| |Compatible with the net.Conn
-interface|Yes|Yes|No|No|
+|Package| [net](https://github.com/golang/go/tree/master/src/net "net")| [netpoll](https://github.com/php2go/netpollmux "netpoll")|[gnet](https://github.com/panjf2000/gnet "gnet")|[evio](https://github.com/tidwall/evio "evio")|
+|:--:|:--|:--|:--|:--|
+|Low memory usage|No|Yes|Yes|Yes|
+|Non-blocking I/O|No|Yes|Yes|Yes|
+|Splice/sendfile|Yes|Yes|No|No|
+|Rescheduling|Yes|Yes|No|No|
+|Compatible with the net.Conn interface|Yes|Yes|No|No|
 
 ## [Benchmark](http://github.com/hslam/netpoll-benchmark "netpoll-benchmark")
 
-<img src="https://raw.githubusercontent.com/php2go/netpollmux/master/netpoll-qps.png" width = "400" height = "300" alt="mock 0ms" align=center><img src="https://raw.githubusercontent.com/php2go/netpollmux/master/netpoll-mock-time-qps.png" width = "400" height = "300" alt="mock 1ms" align=center>
+<img src="https://raw.githubusercontent.com/php2go/netpollmux/main/netpoll-qps.png" width = "400" height = "300" alt="mock 0ms" align=center><img src="https://raw.githubusercontent.com/php2go/netpollmux/main/netpoll-mock-time-qps.png" width = "400" height = "300" alt="mock 1ms" align=center>
 
 ## Get started
 
 ### Install
-
 ```
 go get github.com/php2go/netpollmux
 ```
-
 ### Import
-
 ```
 import "github.com/php2go/netpollmux"
 ```
-
 ### Usage
-
 #### Simple Example
-
 ```go
 package main
 
@@ -70,7 +65,6 @@ func main() {
 ```
 
 #### [TLS](http://github.com/hslam/socket "socket") Example
-
 ```go
 package main
 
@@ -105,15 +99,13 @@ func main() {
 ```
 
 #### Websocket Example
-
 ```go
 package main
 
 import (
-	"net"
-	
 	"github.com/php2go/netpollmux/internal/websocket"
 	"github.com/php2go/netpollmux/netpoll"
+	"net"
 )
 
 func main() {
@@ -135,20 +127,19 @@ func main() {
 }
 ```
 
-#### [HTTP](http://github.com/hslam/rum "rum") Example
 
+#### [HTTP](http://github.com/hslam/rum "rum") Example
 ```go
 package main
 
 import (
 	"bufio"
-	"net"
-	"net/http"
-	"sync"
-	
 	"github.com/php2go/netpollmux/internal/response"
 	"github.com/php2go/netpollmux/mux"
 	"github.com/php2go/netpollmux/netpoll"
+	"net"
+	"net/http"
+	"sync"
 )
 
 func main() {
