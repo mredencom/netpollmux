@@ -10,10 +10,10 @@ import (
 
 const defaultTemplateName = "Html"
 
-var bufPool *sync.Pool
+var bufRenderPool *sync.Pool
 
 func init() {
-	bufPool = &sync.Pool{
+	bufRenderPool = &sync.Pool{
 		New: func() interface{} {
 			return bytes.NewBuffer(nil)
 		},
@@ -21,7 +21,7 @@ func init() {
 }
 func bufPoolPut(buf *bytes.Buffer) {
 	buf.Reset()
-	bufPool.Put(buf)
+	bufRenderPool.Put(buf)
 }
 
 type Tmpl struct {
@@ -65,7 +65,7 @@ func (t *Tmpl) Execute(w http.ResponseWriter, r *http.Request, data interface{},
 }
 
 func (t *Tmpl) execute(data interface{}) (string, error) {
-	buf := bufPool.Get().(*bytes.Buffer)
+	buf := bufRenderPool.Get().(*bytes.Buffer)
 	defer bufPoolPut(buf)
 	if err := t.defaultTemplate.Execute(buf, data); err != nil {
 		return "", err
@@ -116,7 +116,7 @@ func (t *Tmpl) ExecuteTemplate(w http.ResponseWriter, r *http.Request, name stri
 }
 
 func (t *Tmpl) executeTemplate(name string, data interface{}) (string, error) {
-	buf := bufPool.Get().(*bytes.Buffer)
+	buf := bufRenderPool.Get().(*bytes.Buffer)
 	defer bufPoolPut(buf)
 	if err := t.templates.ExecuteTemplate(buf, name, data); err != nil {
 		return "", err

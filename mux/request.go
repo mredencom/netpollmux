@@ -43,7 +43,7 @@ func freeCancel(c <-chan struct{}) {
 	cancelPool.Put(c)
 }
 
-var headerPool = sync.Pool{
+var headerReqPool = sync.Pool{
 	New: func() interface{} {
 		return make(http.Header)
 	},
@@ -56,7 +56,7 @@ func freeHeader(h http.Header) {
 	for key := range h {
 		h.Del(key)
 	}
-	headerPool.Put(h)
+	headerReqPool.Put(h)
 }
 
 var requestPool = sync.Pool{
@@ -101,7 +101,7 @@ func ReadFastRequest(b *bufio.Reader) (*http.Request, error) {
 		return nil, errors.New("status line error ")
 	}
 	req := requestPool.Get().(*http.Request)
-	req.Header = headerPool.Get().(http.Header)
+	req.Header = headerReqPool.Get().(http.Header)
 	req.Method = strs[0]
 	URL, err := url.Parse(strs[1])
 	if err != nil {

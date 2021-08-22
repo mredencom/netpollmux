@@ -17,7 +17,7 @@ import (
 const (
 	httpVersion        = "HTTP/1.1 "
 	chunk              = "%x\r\n"
-	contentLength      = "Content-Length"
+	contentRespLength  = "Content-Length"
 	transferEncoding   = "Transfer-Encoding"
 	contentType        = "Content-Type"
 	date               = "Date"
@@ -111,7 +111,7 @@ var responsePool = sync.Pool{
 	},
 }
 
-var headerPool = sync.Pool{
+var headerHeaderPool = sync.Pool{
 	New: func() interface{} {
 		return make(http.Header)
 	},
@@ -128,14 +128,14 @@ func FreeResponse(w http.ResponseWriter) {
 	}
 }
 
-func freeHeader(h http.Header) {
+func freeRespHeader(h http.Header) {
 	if h == nil {
 		return
 	}
 	for key := range h {
 		h.Del(key)
 	}
-	headerPool.Put(h)
+	headerHeaderPool.Put(h)
 }
 
 // Response implements the http.ResponseWriter interface.
@@ -179,7 +179,7 @@ func NewResponseSize(req *http.Request, conn net.Conn, rw *bufio.ReadWriter, siz
 	}
 	bufferPool := assignBufferPool(size)
 	res := responsePool.Get().(*Response)
-	res.handlerHeader = headerPool.Get().(http.Header)
+	res.handlerHeader = headerHeaderPool.Get().(http.Header)
 	res.contentLength = -1
 	res.req = req
 	res.conn = conn
@@ -244,13 +244,13 @@ func (w *Response) WriteHeader(code int) {
 	w.wroteHeader = true
 	checkWriteHeaderCode(code)
 	w.status = code
-	if cl := w.handlerHeader.Get(contentLength); cl != emptyString {
+	if cl := w.handlerHeader.Get(contentRespLength); cl != emptyString {
 		v, err := strconv.ParseInt(cl, 10, 64)
 		if err == nil && v >= 0 {
 			w.contentLength = v
 			w.setHeader.contentLength = cl
 		} else {
-			w.handlerHeader.Del(contentLength)
+			w.handlerHeader.Del(contentRespLength)
 		}
 	} else if te := w.handlerHeader.Get(transferEncoding); te != emptyString {
 		w.setHeader.transferEncoding = te
@@ -454,7 +454,7 @@ func (cw *chunkWriter) writeHeader(p []byte) {
 		} else {
 			w.setHeader.transferEncoding = chunked
 		}
-	} else if w.handlerDone.isSet() && bodyAllowedForStatus(w.status) && w.handlerHeader.Get(contentLength) == "" && (!w.noCache || !isHEAD || len(p) > 0) {
+	} else if w.handlerDone.isSet() && bodyAllowedForStatus(w.status) && w.handlerHeader.Get(contentRespLength) == "" && (!w.noCache || !isHEAD || len(p) > 0) {
 		w.contentLength = int64(len(p))
 		var clen = strconv.AppendInt(w.clenBuf[:0], int64(len(p)), 10)
 		w.setHeader.contentLength = *(*string)(unsafe.Pointer(&clen))
