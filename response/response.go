@@ -123,7 +123,7 @@ func FreeResponse(w http.ResponseWriter) {
 		return
 	}
 	if res, ok := w.(*Response); ok {
-		*res = Response{}
+		res = &Response{}
 		responsePool.Put(res)
 	}
 }

@@ -128,7 +128,7 @@ func (m *Route) serveEntry(entry *Entry, w http.ResponseWriter, r *http.Request)
 		m.serveHandler(entry.get, w, r)
 	} else if r.Method == "POST" && entry.method&POST > 0 {
 		m.serveHandler(entry.post, w, r)
-	} else if r.Method == "PUT" && entry.method&POST > 0 {
+	} else if r.Method == "PUT" && entry.method&PUT > 0 {
 		m.serveHandler(entry.put, w, r)
 	} else if r.Method == "DELETE" && entry.method&DELETE > 0 {
 		m.serveHandler(entry.delete, w, r)
@@ -245,10 +245,12 @@ func (m *Route) Recovery(handler http.HandlerFunc) {
 }
 
 // Use uses middleware.
-func (m *Route) Use(handler http.HandlerFunc) {
+func (m *Route) Use(handlers ...http.HandlerFunc) {
 	m.mut.Lock()
 	defer m.mut.Unlock()
-	m.middlewares = append(m.middlewares, handler)
+	for _, handler := range handlers {
+		m.middlewares = append(m.middlewares, handler)
+	}
 }
 
 func (m *Route) middleware(w http.ResponseWriter, r *http.Request) {
