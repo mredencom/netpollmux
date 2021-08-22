@@ -1,7 +1,5 @@
 # netpollmux
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/php2go/netpollmux)](https://pkg.go.dev/github.com/php2go/netpollmux)
-[![Build Status](https://github.com/php2go/netpollmux/workflows/build/badge.svg)](https://github.com/php2go/netpollmux/actions)
-[![codecov](https://codecov.io/gh/php2go/netpollmux/branch/master/graph/badge.svg)](https://codecov.io/gh/php2go/netpollmux)
 [![Go Report Card](https://goreportcard.com/badge/github.com/php2go/netpollmux)](https://goreportcard.com/report/github.com/php2go/netpollmux)
 [![LICENSE](https://img.shields.io/github/license/php2go/netpollmux.svg?style=flat-square)](https://github.com/php2go/netpollmux/blob/master/LICENSE)
 
