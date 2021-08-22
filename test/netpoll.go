@@ -5,9 +5,10 @@ import (
 	"log"
 	"net"
 	"net/http"
-	"netpollmux/mux"
-	"netpollmux/netpoll"
 	"sync"
+
+	"github.com/php2go/netpollmux/mux"
+	"github.com/php2go/netpollmux/netpoll"
 )
 
 // https://github.com/hslam?tab=repositories
