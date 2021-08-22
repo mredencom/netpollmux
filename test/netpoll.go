@@ -5,17 +5,15 @@ import (
 	"log"
 	"net"
 	"net/http"
-	"netpollmux"
 	"netpollmux/mux"
-	"netpollmux/render"
-	"netpollmux/response"
+	"netpollmux/netpoll"
 	"sync"
 )
 
 // https://github.com/hslam?tab=repositories
 func main() {
 	m := mux.NewRouter()
-	r := render.NewRender()
+	r := mux.NewRender()
 	r.GzipAll().DeflateAll().Charset("utf-8")
 	//m := gmux.NewRouter()
 	m.HandleFunc("/hello/:id", func(w http.ResponseWriter, req *http.Request) {
@@ -36,14 +34,14 @@ type Context struct {
 }
 
 func ListenAndServe(addr string, handler http.Handler) error {
-	var h = netpollmux.NewConHandler()
+	var h = netpoll.NewConHandler()
 
-	h.SetUpgrade(func(conn net.Conn) (netpollmux.Context, error) {
+	h.SetUpgrade(func(conn net.Conn) (netpoll.Context, error) {
 		reader := bufio.NewReader(conn)
 		rw := bufio.NewReadWriter(reader, bufio.NewWriter(conn))
 		return &Context{reader: reader, conn: conn, rw: rw}, nil
 	})
-	h.SetServe(func(context netpollmux.Context) error {
+	h.SetServe(func(context netpoll.Context) error {
 		ctx := context.(*Context)
 		ctx.serving.Lock()
 		req, err := http.ReadRequest(ctx.reader)
@@ -51,12 +49,12 @@ func ListenAndServe(addr string, handler http.Handler) error {
 			ctx.serving.Unlock()
 			return err
 		}
-		res := response.NewResponse(req, ctx.conn, ctx.rw)
+		res := mux.NewResponse(req, ctx.conn, ctx.rw)
 		handler.ServeHTTP(res, req)
 		res.FinishRequest()
 		ctx.serving.Unlock()
-		response.FreeResponse(res)
+		mux.FreeResponse(res)
 		return nil
 	})
-	return netpollmux.ListenAndServe("tcp", addr, h)
+	return netpoll.ListenAndServe("tcp", addr, h)
 }

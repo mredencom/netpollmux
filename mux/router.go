@@ -5,10 +5,8 @@ import (
 	"crypto/tls"
 	"net"
 	"net/http"
-	"netpollmux"
-	"netpollmux/log"
-	"netpollmux/request"
-	"netpollmux/response"
+	"netpollmux/internal/log"
+	"netpollmux/netpoll"
 	"sync"
 )
 
@@ -27,11 +25,12 @@ type Router struct {
 	// SetSessionTicketKeys, use Server.Serve with a TLS Listener
 	// instead.
 	TLSConfig *tls.Config
+
 	fast      bool
 	poll      bool
 	mut       sync.Mutex
 	listeners []net.Listener
-	pollers   []*netpollmux.Server
+	pollers   []*netpoll.Server
 }
 
 // NewRouter returns a new NewRouter instance.
@@ -71,6 +70,11 @@ func (m *Router) RunTLS(addr string, certFile, keyFile string) error {
 		return err
 	}
 	return m.ServeTLS(ln, certFile, keyFile)
+}
+
+// RunUnix todo
+func RunUnix(file string) error {
+	return nil
 }
 
 // Serve accepts incoming connections on the Listener l, creating a
@@ -120,14 +124,14 @@ func (m *Router) serve(l net.Listener, config *tls.Config) error {
 		if handler == nil {
 			handler = m
 		}
-		var h = netpollmux.NewConHandler()
+		var h = netpoll.NewConHandler()
 		type Context struct {
 			reader  *bufio.Reader
 			rw      *bufio.ReadWriter
 			conn    net.Conn
 			serving sync.Mutex
 		}
-		h.SetUpgrade(func(conn net.Conn) (netpollmux.Context, error) {
+		h.SetUpgrade(func(conn net.Conn) (netpoll.Context, error) {
 			if config != nil {
 				tlsConn := tls.Server(conn, config)
 				if err := tlsConn.Handshake(); err != nil {
@@ -141,26 +145,26 @@ func (m *Router) serve(l net.Listener, config *tls.Config) error {
 			return &Context{reader: reader, conn: conn, rw: rw}, nil
 		})
 		if m.fast {
-			h.SetServe(func(context netpollmux.Context) error {
+			h.SetServe(func(context netpoll.Context) error {
 				ctx := context.(*Context)
 				var err error
 				var req *http.Request
 				ctx.serving.Lock()
-				req, err = request.ReadFastRequest(ctx.reader)
+				req, err = ReadFastRequest(ctx.reader)
 				if err != nil {
 					ctx.serving.Unlock()
 					return err
 				}
-				res := response.NewResponse(req, ctx.conn, ctx.rw)
+				res := NewResponse(req, ctx.conn, ctx.rw)
 				handler.ServeHTTP(res, req)
 				res.FinishRequest()
 				ctx.serving.Unlock()
-				request.FreeRequest(req)
-				response.FreeResponse(res)
+				FreeRequest(req)
+				FreeResponse(res)
 				return nil
 			})
 		} else {
-			h.SetServe(func(context netpollmux.Context) error {
+			h.SetServe(func(context netpoll.Context) error {
 				ctx := context.(*Context)
 				var err error
 				var req *http.Request
@@ -170,15 +174,15 @@ func (m *Router) serve(l net.Listener, config *tls.Config) error {
 					ctx.serving.Unlock()
 					return err
 				}
-				res := response.NewResponse(req, ctx.conn, ctx.rw)
+				res := NewResponse(req, ctx.conn, ctx.rw)
 				handler.ServeHTTP(res, req)
 				res.FinishRequest()
 				ctx.serving.Unlock()
-				response.FreeResponse(res)
+				FreeResponse(res)
 				return nil
 			})
 		}
-		poller := &netpollmux.Server{
+		poller := &netpoll.Server{
 			Handler: h,
 		}
 		m.mut.Lock()
@@ -222,7 +226,7 @@ func (m *Router) Close() error {
 	for _, poller := range m.pollers {
 		poller.Close()
 	}
-	m.pollers = []*netpollmux.Server{}
+	m.pollers = []*netpoll.Server{}
 	m.Handler = nil
 	return nil
 }
@@ -242,10 +246,10 @@ func (m *Router) serveConn(conn net.Conn) {
 		if err != nil {
 			break
 		}
-		res := response.NewResponse(req, conn, rw)
+		res := NewResponse(req, conn, rw)
 		handler.ServeHTTP(res, req)
 		res.FinishRequest()
-		response.FreeResponse(res)
+		FreeResponse(res)
 	}
 }
 
@@ -260,15 +264,15 @@ func (m *Router) serveFastConn(conn net.Conn) {
 		handler = m
 	}
 	for {
-		req, err = request.ReadFastRequest(reader)
+		req, err = ReadFastRequest(reader)
 		if err != nil {
 			break
 		}
-		res := response.NewResponse(req, conn, rw)
+		res := NewResponse(req, conn, rw)
 		handler.ServeHTTP(res, req)
 		res.FinishRequest()
-		request.FreeRequest(req)
-		response.FreeResponse(res)
+		FreeRequest(req)
+		FreeResponse(res)
 	}
 }
 
