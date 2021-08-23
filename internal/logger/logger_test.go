@@ -1,4 +1,4 @@
-package log
+package logger
 
 import (
 	"log"
@@ -7,7 +7,7 @@ import (
 )
 
 func TestPrefix(t *testing.T) {
-	var prefix = "log"
+	var prefix = "logger"
 	SetPrefix(prefix)
 	if prefix != GetPrefix() {
 		t.Errorf("error %s != %s", prefix, GetPrefix())

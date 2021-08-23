@@ -1,7 +1,7 @@
 package mux
 
 import (
-	"github.com/php2go/netpollmux/internal/log"
+	"github.com/php2go/netpollmux/internal/logger"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -21,11 +21,11 @@ func init() {
 func Proxy(w http.ResponseWriter, r *http.Request, targetUrl string) {
 	targetUrlParse, err := url.Parse(targetUrl)
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal(err)
 	}
 	target, err := url.Parse("http://" + targetUrlParse.Host)
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal(err)
 	}
 	r.URL.Path = targetUrlParse.Path
 	proxy := httputil.NewSingleHostReverseProxy(target)

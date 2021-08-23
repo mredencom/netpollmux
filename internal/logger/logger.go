@@ -1,4 +1,4 @@
-package log
+package logger
 
 import (
 	"io"
@@ -34,7 +34,7 @@ const (
 )
 
 var (
-	logPrefix = "Log"
+	logPrefix = "Logger"
 	logger    = New()
 	redBg     = string([]byte{27, 91, 57, 55, 59, 52, 49, 109})
 	magentaBg = string([]byte{27, 91, 57, 55, 59, 52, 53, 109})
