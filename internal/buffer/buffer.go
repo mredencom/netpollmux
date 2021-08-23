@@ -15,6 +15,7 @@ type Buffers struct {
 	buckets  [numBuckets]bucket
 }
 
+// bucket fields
 type bucket struct {
 	lock  sync.RWMutex
 	pools map[int]*Pool

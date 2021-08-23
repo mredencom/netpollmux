@@ -17,10 +17,9 @@ func TestSchedulerPreheat(t *testing.T) {
 	wg := &sync.WaitGroup{}
 	for i := 0; i < total; i++ {
 		wg.Add(1)
-		job := func() {
+		s.Schedule(func() {
 			wg.Done()
-		}
-		s.Schedule(job)
+		})
 	}
 	wg.Wait()
 	s.Close()
@@ -38,10 +37,9 @@ func TestScheduler(t *testing.T) {
 	start := time.Now()
 	for i := 0; i < total; i++ {
 		wg.Add(1)
-		job := func() {
+		s.Schedule(func() {
 			wg.Done()
-		}
-		s.Schedule(job)
+		})
 	}
 	wg.Wait()
 	d := time.Now().Sub(start)
@@ -61,10 +59,9 @@ func TestSchedulerBatch(t *testing.T) {
 	start := time.Now()
 	for i := 0; i < total; i++ {
 		wg.Add(1)
-		job := func() {
+		s.Schedule(func() {
 			wg.Done()
-		}
-		s.Schedule(job)
+		})
 	}
 	wg.Wait()
 	d := time.Now().Sub(start)
@@ -84,10 +81,9 @@ func TestSchedulerConcurrency(t *testing.T) {
 	start := time.Now()
 	for i := 0; i < total; i++ {
 		wg.Add(1)
-		job := func() {
+		s.Schedule(func() {
 			wg.Done()
-		}
-		s.Schedule(job)
+		})
 	}
 	wg.Wait()
 	d := time.Now().Sub(start)
@@ -107,10 +103,9 @@ func TestSchedulerBatchConcurrency(t *testing.T) {
 	start := time.Now()
 	for i := 0; i < total; i++ {
 		wg.Add(1)
-		job := func() {
+		s.Schedule(func() {
 			wg.Done()
-		}
-		s.Schedule(job)
+		})
 	}
 	wg.Wait()
 	d := time.Now().Sub(start)
@@ -128,10 +123,10 @@ func TestSchedulerOptions(t *testing.T) {
 		wg := &sync.WaitGroup{}
 		for i := 0; i < total; i++ {
 			wg.Add(1)
-			job := func() {
+
+			s.Schedule(func() {
 				wg.Done()
-			}
-			s.Schedule(job)
+			})
 		}
 		wg.Wait()
 		s.Close()
@@ -146,10 +141,9 @@ func TestSchedulerOptions(t *testing.T) {
 		wg := &sync.WaitGroup{}
 		for i := 0; i < total; i++ {
 			wg.Add(1)
-			job := func() {
+			s.Schedule(func() {
 				wg.Done()
-			}
-			s.Schedule(job)
+			})
 		}
 		wg.Wait()
 		s.Close()
@@ -167,10 +161,9 @@ func TestSchedulerOptions(t *testing.T) {
 		wg := &sync.WaitGroup{}
 		for i := 0; i < total; i++ {
 			wg.Add(1)
-			job := func() {
+			s.Schedule(func() {
 				wg.Done()
-			}
-			s.Schedule(job)
+			})
 		}
 		wg.Wait()
 		time.Sleep(time.Millisecond * 10)
@@ -189,11 +182,10 @@ func TestSchedulerOptions(t *testing.T) {
 		wg := &sync.WaitGroup{}
 		for i := 0; i < total; i++ {
 			wg.Add(1)
-			job := func() {
+			s.Schedule(func() {
 				wg.Done()
 				time.Sleep(time.Millisecond)
-			}
-			s.Schedule(job)
+			})
 		}
 		wg.Wait()
 		s.Close()
@@ -213,10 +205,9 @@ func TestSchedulerOptions(t *testing.T) {
 		wg := &sync.WaitGroup{}
 		for i := 0; i < total; i++ {
 			wg.Add(1)
-			job := func() {
+			s.Schedule(func() {
 				wg.Done()
-			}
-			s.Schedule(job)
+			})
 		}
 		wg.Wait()
 		s.Close()
@@ -232,11 +223,10 @@ func TestSchedulerOptions(t *testing.T) {
 		wg := &sync.WaitGroup{}
 		for i := 0; i < total; i++ {
 			wg.Add(1)
-			job := func() {
+			s.Schedule(func() {
 				wg.Done()
 				time.Sleep(time.Millisecond)
-			}
-			s.Schedule(job)
+			})
 		}
 		numWorkers := s.NumWorkers()
 		if numWorkers != concurrency && concurrency > 0 {

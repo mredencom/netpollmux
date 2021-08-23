@@ -122,11 +122,11 @@ func (s *scheduler) Close() {
 func (s *scheduler) run() {
 	defer s.wg.Done()
 	ticker := time.NewTicker(s.opts.Interval)
-	var doned bool
+	var done bool
 	var idle bool
 	var lastIdleTime time.Time
 	for {
-		if !doned {
+		if !done {
 			select {
 			case <-ticker.C:
 				if atomic.LoadInt64(&s.workers) > 0 && atomic.LoadInt64(&s.workers) > atomic.LoadInt64(&s.tasks) {
@@ -162,7 +162,7 @@ func (s *scheduler) run() {
 				}
 			case <-s.done:
 				ticker.Stop()
-				doned = true
+				done = true
 			}
 		} else {
 			if atomic.LoadInt64(&s.workers) == 0 {
