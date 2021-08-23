@@ -10,13 +10,13 @@ import (
 )
 
 const (
-	PROT_READ  = syscall.PROT_READ
-	PROT_WRITE = syscall.PROT_WRITE
-	PROT_EXEC  = syscall.PROT_EXEC
+	ProtRead  = syscall.PROT_READ
+	ProtWrite = syscall.PROT_WRITE
+	ProtExec  = syscall.PROT_EXEC
 
-	MAP_SHARED  = syscall.MAP_SHARED
-	MAP_PRIVATE = syscall.MAP_PRIVATE
-	MAP_COPY    = MAP_PRIVATE
+	MapShared  = syscall.MAP_SHARED
+	MapPrivate = syscall.MAP_PRIVATE
+	MapCopy    = MapPrivate
 )
 
 // Offset returns the valid offset.
@@ -26,16 +26,16 @@ func Offset(offset int64) int64 {
 }
 
 func protFlags(p Prot) (prot int, flags int) {
-	prot = PROT_READ
-	flags = MAP_SHARED
+	prot = ProtRead
+	flags = MapShared
 	if p&WRITE != 0 {
-		prot |= PROT_WRITE
+		prot |= ProtWrite
 	}
 	if p&COPY != 0 {
-		flags = MAP_COPY
+		flags = MapCopy
 	}
 	if p&EXEC != 0 {
-		prot |= PROT_EXEC
+		prot |= ProtExec
 	}
 	return
 }

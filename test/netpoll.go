@@ -11,15 +11,14 @@ import (
 	"github.com/php2go/netpollmux/netpoll"
 )
 
-// https://github.com/hslam?tab=repositories
 func main() {
 	m := mux.NewRouter()
 	r := mux.NewRender()
 	r.GzipAll().DeflateAll().Charset("utf-8")
 	//m := gmux.NewRouter()
 	m.HandleFunc("/hello/:id", func(w http.ResponseWriter, req *http.Request) {
-		w.Write([]byte(`Hello World`))
-		//r.JSON(w, req, []string{"compress"}, http.StatusOK)
+		//w.Write([]byte(`Hello World`))
+		r.JSON(w, req, []string{"compress"}, http.StatusOK)
 	})
 	log.Fatal(m.Run(":8080"))
 	//if err := ListenAndServe(":8080", m); err != nil {

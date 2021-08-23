@@ -7,31 +7,16 @@ import (
 	"errors"
 	"os"
 	"sync"
-	"sync/atomic"
 	"syscall"
 	"unsafe"
+
+	"github.com/php2go/netpollmux/internal/buffer"
 )
 
 var (
 	buffers = sync.Map{}
 	assign  int32
 )
-
-func assignPool(size int) *sync.Pool {
-	for {
-		if p, ok := buffers.Load(size); ok {
-			return p.(*sync.Pool)
-		}
-		if atomic.CompareAndSwapInt32(&assign, 0, 1) {
-			var pool = &sync.Pool{New: func() interface{} {
-				return make([]byte, size)
-			}}
-			buffers.Store(size, pool)
-			atomic.StoreInt32(&assign, 0)
-			return pool
-		}
-	}
-}
 
 // Offset returns the valid offset.
 func Offset(offset int64) int64 {
@@ -58,8 +43,8 @@ func (m *mMapper) MMap(fd int, offset int64, length int, prot int, flags int) (d
 	if length <= 0 {
 		return nil, syscall.EINVAL
 	}
-	pool := assignPool(length)
-	buf := pool.Get().([]byte)
+	pool := buffer.AssignPool(length)
+	buf := pool.GetBuffer()
 	cursor, _ := syscall.Seek(fd, 0, os.SEEK_CUR)
 	syscall.Seek(fd, offset, os.SEEK_SET)
 	n, err := syscall.Read(fd, buf)
@@ -119,8 +104,8 @@ func (m *mMapper) MUnmap(data []byte) (err error) {
 	m.Lock()
 	delete(m.active, p)
 	m.Unlock()
-	pool := assignPool(cap(f.buf))
-	pool.Put(f.buf)
+	pool := buffer.AssignPool(cap(f.buf))
+	pool.PutBuffer(f.buf)
 	f = nil
 	return err
 }
