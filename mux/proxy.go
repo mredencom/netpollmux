@@ -23,7 +23,7 @@ func Proxy(w http.ResponseWriter, r *http.Request, targetUrl string) {
 	if err != nil {
 		logger.Fatal(err)
 	}
-	target, err := url.Parse("http://" + targetUrlParse.Host)
+	target, err := url.Parse(targetUrlParse.Scheme + "://" + targetUrlParse.Host)
 	if err != nil {
 		logger.Fatal(err)
 	}

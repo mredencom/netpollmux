@@ -4,29 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c5d69636-6ed5-4495-87f7-8acf839aac17" name="Default Changelist" comment="ignore">
+    <list default="true" id="c5d69636-6ed5-4495-87f7-8acf839aac17" name="Default Changelist" comment="buffer pool">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/buffer/buffer.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/buffer/buffer.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/buffer/buffer_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/buffer/buffer_test.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/inproc/inproc.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/inproc/inproc.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/mmap/mmap.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/mmap/mmap.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/mmap/mmap_other.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/mmap/mmap_other.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/mmap/mmap_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/mmap/mmap_test.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/mmap/mmap_unix.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/mmap/mmap_unix.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/mmap/mmap_windows.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/mmap/mmap_windows.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/sendfile/sendfile.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/sendfile/sendfile.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/socket/messages.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/socket/messages.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/socket/socket_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/socket/socket_test.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/socket/tls.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/socket/tls.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/splice/splice.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/splice/splice.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/splice/splice_other.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/splice/splice_other.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/splice/splice_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/splice/splice_test.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/websocket/conn.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/websocket/conn.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/websocket/frame.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/websocket/frame.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/websocket/handshake.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/websocket/handshake.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/websocket/websocket.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/websocket/websocket.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/writer/writer.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/writer/writer.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mux/compress.go" beforeDir="false" afterPath="$PROJECT_DIR$/mux/compress.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mux/proxy.go" beforeDir="false" afterPath="$PROJECT_DIR$/mux/proxy.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -152,7 +132,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="readme" />
     <MESSAGE value="ignore" />
-    <option name="LAST_COMMIT_MESSAGE" value="ignore" />
+    <MESSAGE value="buffer pool" />
+    <option name="LAST_COMMIT_MESSAGE" value="buffer pool" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
