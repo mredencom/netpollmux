@@ -62,7 +62,7 @@ func main() {
 }
 ```
 
-#### [TLS](http://github.com/hslam/socket "socket") Example
+#### TLS Example
 ```go
 package main
 
@@ -126,57 +126,24 @@ func main() {
 ```
 
 
-#### [HTTP](http://github.com/hslam/rum "rum") Example
+#### HTTP Example
 ```go
 package main
 
 import (
-	"bufio"
-	"github.com/php2go/netpollmux/internal/response"
 	"github.com/php2go/netpollmux/mux"
-	"github.com/php2go/netpollmux/netpoll"
-	"net"
+	"log"
 	"net/http"
-	"sync"
 )
 
 func main() {
-	m := mux.New()
-	m.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Hello World"))
+	m := mux.NewRouter()
+	r := mux.NewRender()
+	r.GzipAll().DeflateAll().Charset("utf-8")
+	m.HandleFunc("/hello/:id", func(w http.ResponseWriter, req *http.Request) {
+		r.JSON(w, req, []string{"compress"}, http.StatusOK)
 	})
-	ListenAndServe(":8080", m)
-}
-
-func ListenAndServe(addr string, handler http.Handler) error {
-	var h = &netpoll.ConnHandler{}
-	type Context struct {
-		reader  *bufio.Reader
-		rw      *bufio.ReadWriter
-		conn    net.Conn
-		serving sync.Mutex
-	}
-	h.SetUpgrade(func(conn net.Conn) (netpoll.Context, error) {
-		reader := bufio.NewReader(conn)
-		rw := bufio.NewReadWriter(reader, bufio.NewWriter(conn))
-		return &Context{reader: reader, conn: conn, rw: rw}, nil
-	})
-	h.SetServe(func(context netpoll.Context) error {
-		ctx := context.(*Context)
-		ctx.serving.Lock()
-		req, err := http.ReadRequest(ctx.reader)
-		if err != nil {
-			ctx.serving.Unlock()
-			return err
-		}
-		res := response.NewResponse(req, ctx.conn, ctx.rw)
-		handler.ServeHTTP(res, req)
-		res.FinishRequest()
-		ctx.serving.Unlock()
-		response.FreeResponse(res)
-		return nil
-	})
-	return netpoll.ListenAndServe("tcp", addr, h)
+	log.Fatal(m.Run(":8080"))
 }
 ```
 
