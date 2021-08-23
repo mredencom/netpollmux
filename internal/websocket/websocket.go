@@ -53,7 +53,7 @@ func upgradeHTTP(w http.ResponseWriter, r *http.Request, shared bool) (*Conn, er
 
 }
 
-// Upgrade upgrades the net.Conn conn to the WebSocket protocol.
+// Upgrade upgrades the net.Conn to the WebSocket protocol.
 func Upgrade(conn net.Conn, config *tls.Config) (*Conn, error) {
 	if config != nil {
 		tlsConn := tls.Server(conn, config)

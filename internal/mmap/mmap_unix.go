@@ -40,11 +40,11 @@ func protFlags(p Prot) (prot int, flags int) {
 	return
 }
 
-func mmap(fd int, offset int64, length int, prot int, flags int) (data []byte, err error) {
+func mMap(fd int, offset int64, length int, prot int, flags int) (data []byte, err error) {
 	return syscall.Mmap(fd, offset, length, prot, flags)
 }
 
-func msync(b []byte) (err error) {
+func mSync(b []byte) (err error) {
 	_, _, errno := syscall.Syscall(syscall.SYS_MSYNC, uintptr(unsafe.Pointer(&b[0])), uintptr(len(b)), syscall.MS_SYNC)
 	if errno != 0 {
 		err = syscall.Errno(errno)
@@ -52,6 +52,6 @@ func msync(b []byte) (err error) {
 	return
 }
 
-func munmap(b []byte) (err error) {
+func mUnmap(b []byte) (err error) {
 	return syscall.Munmap(b)
 }

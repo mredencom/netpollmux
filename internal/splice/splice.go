@@ -2,11 +2,11 @@ package splice
 
 import (
 	"errors"
+	"github.com/php2go/netpollmux/internal/buffer"
 	"io"
 	"net"
 	"runtime"
 	"sync"
-	"sync/atomic"
 	"syscall"
 	"time"
 )
@@ -24,8 +24,6 @@ var (
 	bucketsLen      = runtime.NumCPU()
 	buckets         = make([]bucket, bucketsLen)
 	maxIdleContexts = contexts(bucketsLen)
-	buffers         = sync.Map{}
-	assign          int32
 
 	// EOF is the error returned by Read when no more input is available.
 	// Functions should return EOF only to signal a graceful end of input.
@@ -52,28 +50,12 @@ func MaxIdleContextsPerBucket(max int) {
 	}
 }
 
-func assignPool(size int) *sync.Pool {
-	for {
-		if p, ok := buffers.Load(size); ok {
-			return p.(*sync.Pool)
-		}
-		if atomic.CompareAndSwapInt32(&assign, 0, 1) {
-			var pool = &sync.Pool{New: func() interface{} {
-				return make([]byte, size)
-			}}
-			buffers.Store(size, pool)
-			atomic.StoreInt32(&assign, 0)
-			return pool
-		}
-	}
-}
-
 // context represents a splice context.
 type context struct {
 	buffer []byte
 	writer int
 	reader int
-	pool   *sync.Pool
+	pool   *buffer.Pool
 	bucket *bucket
 	alive  bool
 }
@@ -191,9 +173,9 @@ func spliceBuffer(dst, src net.Conn, len int64) (n int64, err error) {
 		bufferSize = int(len)
 	}
 	var buf []byte
-	pool := assignPool(bufferSize)
-	buf = pool.Get().([]byte)
-	defer pool.Put(buf)
+	pool := buffer.AssignPool(bufferSize)
+	buf = pool.GetBuffer()
+	defer pool.PutBuffer(buf)
 	var remain int
 	remain, err = src.Read(buf)
 	if err != nil {

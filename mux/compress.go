@@ -7,7 +7,6 @@ import (
 )
 
 var bufPool *sync.Pool
-
 var compressorPool *sync.Pool
 
 func init() {
@@ -23,11 +22,13 @@ func init() {
 	}
 }
 
+// putBuffer set Buffer stream
 func putBuffer(buf *bytes.Buffer) {
 	buf.Reset()
 	bufPool.Put(buf)
 }
 
+// putCompressor set Compressor stream
 func putCompressor(compressor *Compressor) {
 	if compressor.buf != nil {
 		putBuffer(compressor.buf)
@@ -69,6 +70,7 @@ func (c *Compressor) ready(w http.ResponseWriter, r *http.Request) {
 	c.compress = true
 }
 
+// Write byte
 func (c *Compressor) Write(b []byte) (int, error) {
 	if c.compress {
 		SetHeader(c.w, ContentType, http.DetectContentType(b))
@@ -78,6 +80,7 @@ func (c *Compressor) Write(b []byte) (int, error) {
 	}
 }
 
+// Close a Compressor
 func (c *Compressor) Close() error {
 	defer putCompressor(c)
 	if c.compress {

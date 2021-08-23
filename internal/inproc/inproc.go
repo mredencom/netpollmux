@@ -44,8 +44,8 @@ func init() {
 type conn struct {
 	r     io.ReadCloser
 	w     io.WriteCloser
-	laddr addr
-	raddr addr
+	lAddr addr
+	rAddr addr
 }
 
 // Read reads data from the connection.
@@ -71,12 +71,12 @@ func (c *conn) Close() (err error) {
 
 // LocalAddr returns the local network address.
 func (c *conn) LocalAddr() net.Addr {
-	return c.laddr
+	return c.lAddr
 }
 
 // RemoteAddr returns the remote network address.
 func (c *conn) RemoteAddr() net.Addr {
-	return c.raddr
+	return c.rAddr
 }
 
 // SetDeadline implements the net.Conn SetDeadline method.
@@ -97,9 +97,9 @@ func (c *conn) SetWriteDeadline(t time.Time) error {
 // Dial connects to an address.
 func Dial(address string) (net.Conn, error) {
 	raddr := addr{network: network, address: address}
-	var accepter *accepter
+	var acceptor *acceptor
 	r, w := io.Pipe()
-	conn := &conn{w: w, laddr: raddr}
+	conn := &conn{w: w, lAddr: raddr}
 	addrs.locker.RLock()
 	l, ok := addrs.listeners[raddr]
 	if !ok {
@@ -109,33 +109,33 @@ func Dial(address string) (net.Conn, error) {
 	addrs.locker.RUnlock()
 	l.locker.Lock()
 	for {
-		if len(l.accepters) > 0 {
-			accepter = l.accepters[len(l.accepters)-1]
-			l.accepters = l.accepters[:len(l.accepters)-1]
+		if len(l.acceptors) > 0 {
+			acceptor = l.acceptors[len(l.acceptors)-1]
+			l.acceptors = l.acceptors[:len(l.acceptors)-1]
 			break
 		}
 		l.cond.Wait()
 	}
 	l.locker.Unlock()
-	conn.r = accepter.reader
-	conn.raddr = conn.laddr
-	accepter.conn.r = r
-	accepter.conn.raddr = conn.laddr
-	close(accepter.done)
+	conn.r = acceptor.reader
+	conn.rAddr = conn.lAddr
+	acceptor.conn.r = r
+	acceptor.conn.rAddr = conn.lAddr
+	close(acceptor.done)
 	return conn, nil
 }
 
 // listener implements the net.Listener interface.
 type listener struct {
-	laddr     addr
+	lAddr     addr
 	cond      sync.Cond
 	locker    sync.Mutex
-	accepters []*accepter
+	acceptors []*acceptor
 	done      chan struct{}
 	closed    int32
 }
 
-type accepter struct {
+type acceptor struct {
 	*conn
 	reader io.ReadCloser
 	done   chan struct{}
@@ -143,15 +143,15 @@ type accepter struct {
 
 // Listen announces on the local address.
 func Listen(address string) (net.Listener, error) {
-	laddr := addr{network: network, address: address}
-	l := &listener{laddr: laddr, done: make(chan struct{})}
+	lAddr := addr{network: network, address: address}
+	l := &listener{lAddr: lAddr, done: make(chan struct{})}
 	l.cond.L = &l.locker
 	addrs.locker.Lock()
-	if _, ok := addrs.listeners[l.laddr]; ok {
+	if _, ok := addrs.listeners[l.lAddr]; ok {
 		addrs.locker.Unlock()
 		return nil, errors.New("address already in use")
 	}
-	addrs.listeners[l.laddr] = l
+	addrs.listeners[l.lAddr] = l
 	addrs.locker.Unlock()
 	return l, nil
 }
@@ -159,41 +159,41 @@ func Listen(address string) (net.Listener, error) {
 // Accept waits for and returns the next connection to the listener.
 func (l *listener) Accept() (net.Conn, error) {
 	r, w := io.Pipe()
-	accepter := &accepter{conn: &conn{w: w, laddr: l.laddr}, reader: r}
-	accepter.done = make(chan struct{})
+	acceptor := &acceptor{conn: &conn{w: w, lAddr: l.lAddr}, reader: r}
+	acceptor.done = make(chan struct{})
 	l.locker.Lock()
-	l.accepters = append(l.accepters, accepter)
+	l.acceptors = append(l.acceptors, acceptor)
 	l.locker.Unlock()
 	l.cond.Broadcast()
 	select {
-	case <-accepter.done:
-		return accepter.conn, nil
+	case <-acceptor.done:
+		return acceptor.conn, nil
 	case <-l.done:
 		return nil, errors.New("use of closed network connection")
 	}
 }
 
 // Close closes the listener.
-// Any blocked Accept operations will be unblocked and return errors.
+// Any blocked accept operations will be unblocked and return errors.
 func (l *listener) Close() error {
 	if atomic.CompareAndSwapInt32(&l.closed, 0, 1) {
 		close(l.done)
 	}
 	addrs.locker.Lock()
-	delete(addrs.listeners, l.laddr)
+	delete(addrs.listeners, l.lAddr)
 	addrs.locker.Unlock()
 	l.locker.Lock()
-	accepters := l.accepters
-	l.accepters = nil
+	acceptors := l.acceptors
+	l.acceptors = nil
 	l.locker.Unlock()
 	l.cond.Broadcast()
-	for _, accepter := range accepters {
-		accepter.Close()
+	for _, acceptor := range acceptors {
+		acceptor.Close()
 	}
 	return nil
 }
 
 // Addr returns the listener's network address.
 func (l *listener) Addr() net.Addr {
-	return l.laddr
+	return l.lAddr
 }

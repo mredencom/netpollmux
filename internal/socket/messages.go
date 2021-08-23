@@ -1,6 +1,7 @@
 package socket
 
 import (
+	"github.com/php2go/netpollmux/internal/buffer"
 	"io"
 	"strings"
 	"sync"
@@ -16,21 +17,21 @@ var (
 	assign  int32
 )
 
-func assignPool(size int) *sync.Pool {
-	for {
-		if p, ok := buffers.Load(size); ok {
-			return p.(*sync.Pool)
-		}
-		if atomic.CompareAndSwapInt32(&assign, 0, 1) {
-			var pool = &sync.Pool{New: func() interface{} {
-				return make([]byte, size)
-			}}
-			buffers.Store(size, pool)
-			atomic.StoreInt32(&assign, 0)
-			return pool
-		}
-	}
-}
+//func assignPool(size int) *sync.Pool {
+//	for {
+//		if p, ok := buffers.Load(size); ok {
+//			return p.(*sync.Pool)
+//		}
+//		if atomic.CompareAndSwapInt32(&assign, 0, 1) {
+//			var pool = &sync.Pool{New: func() interface{} {
+//				return make([]byte, size)
+//			}}
+//			buffers.Store(size, pool)
+//			atomic.StoreInt32(&assign, 0)
+//			return pool
+//		}
+//	}
+//}
 
 // Batch interface is used to write batch messages.
 type Batch interface {
@@ -60,8 +61,8 @@ type messages struct {
 	writeBufferSize int
 	writeBuffer     []byte
 	buffer          []byte
-	readPool        *sync.Pool
-	writePool       *sync.Pool
+	readPool        *buffer.Pool
+	writePool       *buffer.Pool
 	closed          int32
 }
 
@@ -77,11 +78,11 @@ func NewMessages(rwc io.ReadWriteCloser, shared bool, writeBufferSize int, readB
 	readBufferSize += 10
 	var readBuffer []byte
 	var writeBuffer []byte
-	var readPool *sync.Pool
-	var writePool *sync.Pool
+	var readPool *buffer.Pool
+	var writePool *buffer.Pool
 	if shared {
-		readPool = assignPool(readBufferSize)
-		writePool = assignPool(writeBufferSize)
+		readPool = buffer.AssignPool(readBufferSize)
+		writePool = buffer.AssignPool(writeBufferSize)
 	} else {
 		readBuffer = make([]byte, readBufferSize)
 		writeBuffer = make([]byte, writeBufferSize)
@@ -158,7 +159,7 @@ func (m *messages) ReadMessage(buf []byte) (p []byte, err error) {
 	read:
 		var readBuffer []byte
 		if m.shared {
-			readBuffer = m.readPool.Get().([]byte)
+			readBuffer = m.readPool.GetBuffer()
 			readBuffer = readBuffer[:cap(readBuffer)]
 		} else {
 			readBuffer = m.readBuffer
@@ -171,7 +172,7 @@ func (m *messages) ReadMessage(buf []byte) (p []byte, err error) {
 				err = io.EOF
 			}
 			if m.shared {
-				m.readPool.Put(readBuffer)
+				m.readPool.PutBuffer(readBuffer)
 			}
 			return nil, err
 		} else if n > 0 {
@@ -184,7 +185,7 @@ func (m *messages) ReadMessage(buf []byte) (p []byte, err error) {
 				m.buffer = append(m.buffer, readBuffer[:n]...)
 			}
 			if m.shared {
-				m.readPool.Put(readBuffer)
+				m.readPool.PutBuffer(readBuffer)
 			}
 		}
 	}
@@ -196,7 +197,7 @@ func (m *messages) WriteMessage(b []byte) error {
 	var size = 10 + length
 	var writeBuffer []byte
 	if m.shared {
-		writeBuffer = m.writePool.Get().([]byte)
+		writeBuffer = m.writePool.GetBuffer()
 		writeBuffer = writeBuffer[:cap(writeBuffer)]
 	} else {
 		writeBuffer = m.writeBuffer
@@ -229,7 +230,7 @@ func (m *messages) WriteMessage(b []byte) error {
 		}
 	}
 	if m.shared {
-		m.writePool.Put(writeBuffer)
+		m.writePool.PutBuffer(writeBuffer)
 	}
 	return err
 }

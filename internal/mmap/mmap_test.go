@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestMmap(t *testing.T) {
+func TestMMap(t *testing.T) {
 	ProtFlags(READ | WRITE | COPY | EXEC)
 	name := "mmap"
 	file, err := os.Create(name)
@@ -18,8 +18,8 @@ func TestMmap(t *testing.T) {
 	size := 11
 	file.Truncate(int64(size) + offset)
 	file.Sync()
-	if Fsize(file) != size+int(offset) {
-		t.Error(Fsize(file), size+int(offset))
+	if FSize(file) != size+int(offset) {
+		t.Error(FSize(file), size+int(offset))
 	}
 	m, err := Open(Fd(file), offset, size, READ|WRITE)
 	if err != nil {
@@ -27,7 +27,7 @@ func TestMmap(t *testing.T) {
 	}
 	str := "Hello world"
 	copy(m, []byte(str))
-	if err := Msync(m); err != nil {
+	if err := MSync(m); err != nil {
 		t.Error(err)
 	}
 	buf := make([]byte, size)
@@ -36,14 +36,14 @@ func TestMmap(t *testing.T) {
 	if str != string(buf) {
 		t.Errorf("%s!=%s", str, string(buf))
 	}
-	if err := Munmap(m); err != nil {
+	if err := MUnmap(m); err != nil {
 		t.Error(err)
 	}
-	Msync(m)
+	MSync(m)
 	file.Sync()
 }
 
-func BenchmarkMmap(b *testing.B) {
+func BenchmarkMMap(b *testing.B) {
 	name := "mmap"
 	file, err := os.Create(name)
 	if err != nil {
@@ -54,17 +54,17 @@ func BenchmarkMmap(b *testing.B) {
 	size := 11
 	file.Truncate(int64(size))
 	file.Sync()
-	m, err := Open(Fd(file), 0, Fsize(file), READ|WRITE)
+	m, err := Open(Fd(file), 0, FSize(file), READ|WRITE)
 	if err != nil {
 		b.Error(err)
 	}
 	str := "Hello world"
 	for i := 0; i < b.N; i++ {
 		copy(m, []byte(str))
-		Msync(m)
+		MSync(m)
 		file.Sync()
 	}
-	if err := Munmap(m); err != nil {
+	if err := MUnmap(m); err != nil {
 		b.Error(err)
 	}
 }

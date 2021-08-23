@@ -48,12 +48,12 @@ func protFlags(p Prot) (prot int, flags int) {
 	return
 }
 
-type mmapper struct {
+type mMapper struct {
 	sync.Mutex
 	active map[*byte][]byte
 }
 
-func (m *mmapper) Mmap(fd int, offset int64, length int, prot int, flags int) (data []byte, err error) {
+func (m *mMapper) MMap(fd int, offset int64, length int, prot int, flags int) (data []byte, err error) {
 	if length <= 0 {
 		return nil, syscall.EINVAL
 	}
@@ -83,7 +83,7 @@ func (m *mmapper) Mmap(fd int, offset int64, length int, prot int, flags int) (d
 	return b, nil
 }
 
-func (m *mmapper) Msync(b []byte) (err error) {
+func (m *mMapper) MSync(b []byte) (err error) {
 	slice := (*struct {
 		addr uintptr
 		len  int
@@ -99,7 +99,7 @@ func (m *mmapper) Msync(b []byte) (err error) {
 	return syscall.FlushViewOfFile(slice.addr, uintptr(slice.len))
 }
 
-func (m *mmapper) Munmap(data []byte) (err error) {
+func (m *mmapper) MUnmap(data []byte) (err error) {
 	if len(data) == 0 || len(data) != cap(data) {
 		return syscall.EINVAL
 	}
@@ -120,18 +120,18 @@ func (m *mmapper) Munmap(data []byte) (err error) {
 	return nil
 }
 
-var mapper = &mmapper{
+var mapper = &mMapper{
 	active: make(map[*byte][]byte),
 }
 
-func mmap(fd int, offset int64, length int, prot int, flags int) (data []byte, err error) {
-	return mapper.Mmap(fd, offset, length, prot, flags)
+func mMap(fd int, offset int64, length int, prot int, flags int) (data []byte, err error) {
+	return mapper.MMap(fd, offset, length, prot, flags)
 }
 
-func msync(b []byte) (err error) {
-	return mapper.Msync(b)
+func mSync(b []byte) (err error) {
+	return mapper.MSync(b)
 }
 
-func munmap(b []byte) (err error) {
-	return mapper.Munmap(b)
+func mUnmap(b []byte) (err error) {
+	return mapper.MUnmap(b)
 }

@@ -26,9 +26,14 @@ type Pool struct {
 	pool *sync.Pool
 }
 
-// GetBuffer returns a bytes from the pool with the given size.
-func (p *Pool) GetBuffer(size int) []byte {
+// GetBufferSize returns a bytes from the pool with the given size.
+func (p *Pool) GetBufferSize(size int) []byte {
 	return p.pool.Get().([]byte)[:size]
+}
+
+// GetBuffer returns a bytes from the pool with the given size.
+func (p *Pool) GetBuffer() []byte {
+	return p.pool.Get().([]byte)
 }
 
 // PutBuffer frees the bytes to the pool.
@@ -83,7 +88,7 @@ func (b *Buffers) AssignPool(size int) (p *Pool) {
 
 // GetBuffer returns a bytes from the pool with the given size.
 func (b *Buffers) GetBuffer(size int) []byte {
-	return b.AssignPool(size).GetBuffer(size)
+	return b.AssignPool(size).GetBufferSize(size)
 }
 
 // PutBuffer frees the bytes to the pool.

@@ -5,32 +5,13 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
+
+	"github.com/php2go/netpollmux/internal/buffer"
 )
 
 const thresh = 4
 const maximumSegmentSize = 65536
 const lastsSize = 4
-
-var (
-	buffers = sync.Map{}
-	assign  int32
-)
-
-func assignPool(size int) *sync.Pool {
-	for {
-		if p, ok := buffers.Load(size); ok {
-			return p.(*sync.Pool)
-		}
-		if atomic.CompareAndSwapInt32(&assign, 0, 1) {
-			var pool = &sync.Pool{New: func() interface{} {
-				return make([]byte, size)
-			}}
-			buffers.Store(size, pool)
-			atomic.StoreInt32(&assign, 0)
-			return pool
-		}
-	}
-}
 
 // Flusher is the interface that wraps the basic Flush method.
 //
@@ -135,7 +116,7 @@ func (w *Writer) Write(p []byte) (n int, err error) {
 			}
 		} else {
 			if w.shared && len(w.buffer) == 0 {
-				w.buffer = assignPool(w.mss).Get().([]byte)
+				w.buffer = buffer.AssignPool(w.mss).GetBuffer()
 			}
 			copy(w.buffer[w.size:], p)
 			w.size += length
@@ -163,7 +144,7 @@ func (w *Writer) Write(p []byte) (n int, err error) {
 				}
 			} else {
 				if w.shared && len(w.buffer) == 0 {
-					w.buffer = assignPool(w.mss).Get().([]byte)
+					w.buffer = buffer.AssignPool(w.mss).GetBuffer()
 				}
 				copy(w.buffer[w.size:], p)
 				w.size += length
@@ -178,7 +159,7 @@ func (w *Writer) Write(p []byte) (n int, err error) {
 			}
 		} else {
 			if w.shared && len(w.buffer) == 0 {
-				w.buffer = assignPool(w.mss).Get().([]byte)
+				w.buffer = buffer.AssignPool(w.mss).GetBuffer()
 			}
 			copy(w.buffer[w.size:], p)
 			w.size += length
@@ -210,7 +191,7 @@ func (w *Writer) flush(reset bool) (err error) {
 	if w.size > 0 {
 		_, err = w.writer.Write(w.buffer[:w.size])
 		if w.shared {
-			assignPool(w.mss).Put(w.buffer)
+			buffer.AssignPool(w.mss).PutBuffer(w.buffer)
 			w.buffer = nil
 		}
 		w.size = 0

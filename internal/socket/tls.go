@@ -27,8 +27,8 @@ func TLSConfig(certPEM []byte, keyPEM []byte) *tls.Config {
 	return &tls.Config{Certificates: []tls.Certificate{tlsCert}}
 }
 
-// DefalutTLSConfig returns a default TLS config.
-func DefalutTLSConfig() *tls.Config {
+// DefaultTLSConfig returns a default TLS config.
+func DefaultTLSConfig() *tls.Config {
 	return TLSConfig(DefaultCertPEM, DefaultKeyPEM)
 }
 

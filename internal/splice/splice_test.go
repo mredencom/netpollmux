@@ -1,6 +1,7 @@
 package splice
 
 import (
+	"github.com/php2go/netpollmux/internal/buffer"
 	"io/ioutil"
 	"net"
 	"sync"
@@ -181,10 +182,10 @@ func TestBucket(t *testing.T) {
 }
 
 func TestAssignPool(t *testing.T) {
-	p := assignPool(1024)
-	b := p.Get().([]byte)
+	p := buffer.AssignPool(1024)
+	b := p.GetBuffer()
 	if len(b) < 1024 {
 		t.Error(len(b))
 	}
-	assignPool(1024)
+	buffer.AssignPool(1024)
 }

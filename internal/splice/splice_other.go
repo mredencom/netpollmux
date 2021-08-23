@@ -4,6 +4,7 @@
 package splice
 
 import (
+	"github.com/php2go/netpollmux/internal/buffer"
 	"net"
 )
 
@@ -15,14 +16,14 @@ const (
 
 // newContext returns a new context.
 func newContext(b *bucket) (*context, error) {
-	pool := assignPool(maxSpliceSize)
-	buf := pool.Get().([]byte)
+	pool := buffer.AssignPool(maxSpliceSize)
+	buf := pool.GetBuffer()
 	return &context{buffer: buf, pool: pool, bucket: b}, nil
 }
 
 // Close closes the context.
 func (ctx *context) Close() {
-	ctx.pool.Put(ctx.buffer[:cap(ctx.buffer)])
+	ctx.pool.PutBuffer(ctx.buffer[:cap(ctx.buffer)])
 }
 
 // Splice wraps the splice system call.

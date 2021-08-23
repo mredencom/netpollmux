@@ -31,7 +31,7 @@ func sendFile(conn net.Conn, src int, pos, remain int64, maxSize int) (written i
 			return
 		}
 		n, errno := conn.Write(b[pos : pos+int64(n)])
-		_ = mmap.Munmap(b)
+		_ = mmap.MUnmap(b)
 		if n > 0 {
 			pos += int64(n)
 			written += int64(n)
