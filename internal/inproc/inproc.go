@@ -96,12 +96,12 @@ func (c *conn) SetWriteDeadline(t time.Time) error {
 
 // Dial connects to an address.
 func Dial(address string) (net.Conn, error) {
-	raddr := addr{network: network, address: address}
+	rAddr := addr{network: network, address: address}
 	var acceptor *acceptor
 	r, w := io.Pipe()
-	conn := &conn{w: w, lAddr: raddr}
+	conn := &conn{w: w, lAddr: rAddr}
 	addrs.locker.RLock()
-	l, ok := addrs.listeners[raddr]
+	l, ok := addrs.listeners[rAddr]
 	if !ok {
 		addrs.locker.RUnlock()
 		return nil, errors.New("connection refused")

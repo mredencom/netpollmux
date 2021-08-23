@@ -2,13 +2,14 @@ package splice
 
 import (
 	"errors"
-	"github.com/php2go/netpollmux/internal/buffer"
 	"io"
 	"net"
 	"runtime"
 	"sync"
 	"syscall"
 	"time"
+
+	"github.com/php2go/netpollmux/internal/buffer"
 )
 
 const (
@@ -69,6 +70,7 @@ type bucket struct {
 	lastIdle        time.Time
 }
 
+// assignBucket assigns a bucket
 func assignBucket(id int) *bucket {
 	return &buckets[id%bucketsLen]
 }
