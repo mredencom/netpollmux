@@ -4,11 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c5d69636-6ed5-4495-87f7-8acf839aac17" name="Default Changelist" comment="del cir">
+    <list default="true" id="c5d69636-6ed5-4495-87f7-8acf839aac17" name="Default Changelist" comment="scheduler code">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/buffer/buffer.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/buffer/buffer.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/scheduler/scheduler.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/scheduler/scheduler.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/scheduler/scheduler_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/scheduler/scheduler_test.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -137,7 +135,8 @@
     <MESSAGE value="buffer pool" />
     <MESSAGE value="proxy" />
     <MESSAGE value="del cir" />
-    <option name="LAST_COMMIT_MESSAGE" value="del cir" />
+    <MESSAGE value="scheduler code" />
+    <option name="LAST_COMMIT_MESSAGE" value="scheduler code" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
