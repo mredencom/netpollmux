@@ -14,6 +14,7 @@ import (
 func main() {
 	m := mux.NewRouter()
 	r := mux.NewRender()
+
 	r.GzipAll().DeflateAll().Charset("utf-8")
 	//m := gmux.NewRouter()
 	m.HandleFunc("/hello/:id", func(w http.ResponseWriter, req *http.Request) {
