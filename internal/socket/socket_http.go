@@ -5,11 +5,12 @@ import (
 	"crypto/tls"
 	"errors"
 	"fmt"
-	"github.com/php2go/netpollmux/netpoll"
 	"io"
 	"net"
 	"net/http"
 	"time"
+
+	"github.com/php2go/netpollmux/netpoll"
 )
 
 const (
