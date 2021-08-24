@@ -5,13 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"net"
-	"runtime"
 	"strings"
 
 	"github.com/php2go/netpollmux/netpoll"
 )
-
-var numCPU = runtime.NumCPU()
 
 // ErrHandler is the error when the handler is nil
 var ErrHandler = errors.New("handler is nil")

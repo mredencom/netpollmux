@@ -1,37 +1,16 @@
 package socket
 
 import (
-	"github.com/php2go/netpollmux/internal/buffer"
 	"io"
 	"strings"
 	"sync"
 	"sync/atomic"
 
+	"github.com/php2go/netpollmux/internal/buffer"
 	"github.com/php2go/netpollmux/internal/writer"
 )
 
 const bufferSize = 65526
-
-var (
-	buffers = sync.Map{}
-	assign  int32
-)
-
-//func assignPool(size int) *sync.Pool {
-//	for {
-//		if p, ok := buffers.Load(size); ok {
-//			return p.(*sync.Pool)
-//		}
-//		if atomic.CompareAndSwapInt32(&assign, 0, 1) {
-//			var pool = &sync.Pool{New: func() interface{} {
-//				return make([]byte, size)
-//			}}
-//			buffers.Store(size, pool)
-//			atomic.StoreInt32(&assign, 0)
-//			return pool
-//		}
-//	}
-//}
 
 // Batch interface is used to write batch messages.
 type Batch interface {
