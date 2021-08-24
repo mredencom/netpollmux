@@ -57,20 +57,12 @@ type prefix struct {
 
 // Entry represents an HTTP HandlerFunc entry.
 type Entry struct {
-	handler http.Handler
-	key     string
-	match   []string
-	params  map[string]string
-	method  int
-	get     http.Handler
-	post    http.Handler
-	put     http.Handler
-	delete  http.Handler
-	patch   http.Handler
-	head    http.Handler
-	options http.Handler
-	trace   http.Handler
-	connect http.Handler
+	handler                                                      http.Handler
+	key                                                          string
+	match                                                        []string
+	params                                                       map[string]string
+	method                                                       int
+	get, post, put, delete, patch, head, options, trace, connect http.Handler
 }
 
 // NewRoute returns a new NewRoute.
@@ -113,14 +105,15 @@ func (m *Route) searchEntry(path string, w http.ResponseWriter, r *http.Request)
 	if entry := m.getHandlerFunc(path); entry != nil {
 		return entry
 	}
-	for _, groupMux := range m.groups {
-		if entry := groupMux.searchEntry(path, w, r); entry != nil {
+	for _, group := range m.groups {
+		if entry := group.searchEntry(path, w, r); entry != nil {
 			return entry
 		}
 	}
 	return nil
 }
 
+// serveEntry find the corresponding service method
 func (m *Route) serveEntry(entry *Entry, w http.ResponseWriter, r *http.Request) {
 	if entry.method == 0 {
 		m.serveHandler(entry.handler, w, r)
@@ -142,6 +135,8 @@ func (m *Route) serveEntry(entry *Entry, w http.ResponseWriter, r *http.Request)
 		m.serveHandler(entry.trace, w, r)
 	} else if r.Method == "CONNECT" && entry.method&CONNECT > 0 {
 		m.serveHandler(entry.connect, w, r)
+	} else {
+		m.serveHandler(m.notFound, w, r)
 	}
 }
 
@@ -151,7 +146,7 @@ func Recovery(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	w.Header().Set("X-Content-Type-Options", "nosniff")
 	w.WriteHeader(http.StatusInternalServerError)
-	fmt.Fprintf(w, "500 Internal Server Error : %v\n", err)
+	_, _ = fmt.Fprintf(w, "500 Internal Server Error : %v\n", err)
 }
 
 func (m *Route) serveHandler(handler http.Handler, w http.ResponseWriter, r *http.Request) {
@@ -169,6 +164,7 @@ func (m *Route) serveHandler(handler http.Handler, w http.ResponseWriter, r *htt
 	}
 }
 
+// getHandlerFunc return according to the path  Entry
 func (m *Route) getHandlerFunc(path string) *Entry {
 	if prefix, key, ok := m.matchParams(path); ok {
 		if entry, ok := m.prefixes[prefix].m[key]; ok {
@@ -281,6 +277,7 @@ func (m *Route) Params(r *http.Request) map[string]string {
 	return params
 }
 
+// matchParams match route params
 func (m *Route) matchParams(path string) (string, string, bool) {
 	for _, p := range m.prefixes {
 		if strings.HasPrefix(path, p.prefix) {
@@ -314,6 +311,7 @@ func (m *Route) matchParams(path string) (string, string, bool) {
 	return "", "", false
 }
 
+// parseParams parse params
 func (m *Route) parseParams(pattern string) (string, string, []string, map[string]string) {
 	prefix := ""
 	var match []string
@@ -346,6 +344,7 @@ func (m *Route) parseParams(pattern string) (string, string, []string, map[strin
 	return prefix, key, match, params
 }
 
+// replace replace a string
 func (m *Route) replace(s string) string {
 	for strings.Contains(s, "//") {
 		s = strings.ReplaceAll(s, "//", "/")

@@ -40,6 +40,7 @@ const (
 	AccessControlAllowHeaders     = "Access-Control-Allow-Headers"
 )
 
+// SetHeader set a response header
 func SetHeader(w http.ResponseWriter, key, value string) {
 	if _, ok := w.Header()[key]; ok {
 		w.Header().Set(key, value)
@@ -48,18 +49,22 @@ func SetHeader(w http.ResponseWriter, key, value string) {
 	}
 }
 
+// DelHeader delete a response header
 func DelHeader(w http.ResponseWriter, key string) {
 	w.Header().Del(key)
 }
 
+// WriteHeader write a response header
 func WriteHeader(w http.ResponseWriter, code int) {
 	w.WriteHeader(code)
 }
 
+// GetRequestHeader get a request header
 func GetRequestHeader(r *http.Request, key string) (value string) {
 	return r.Header.Get(key)
 }
 
+// GetResponseHeader get response a header
 func GetResponseHeader(w http.ResponseWriter, key string) (value string) {
 	return w.Header().Get(key)
 }
