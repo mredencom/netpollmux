@@ -67,20 +67,19 @@ type Entry struct {
 
 // NewRoute returns a new NewRoute.
 func NewRoute() *Route {
-	m := &Route{
+	return &Route{
 		prefixes: make(map[string]*prefix),
 		groups:   make(map[string]*Route),
 	}
-	return m
 }
 
+// newGroup create a route group,require prefix
 func newGroup(group string) *Route {
-	m := &Route{
+	return &Route{
 		prefixes: make(map[string]*prefix),
 		groups:   make(map[string]*Route),
 		group:    group,
 	}
-	return m
 }
 
 // ServeHTTP dispatches the request to the handler whose
@@ -101,6 +100,7 @@ func (m *Route) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "404 Not Found : "+r.URL.String(), http.StatusNotFound)
 }
 
+// searchEntry search a route to the entry
 func (m *Route) searchEntry(path string, w http.ResponseWriter, r *http.Request) *Entry {
 	if entry := m.getHandlerFunc(path); entry != nil {
 		return entry
@@ -279,6 +279,7 @@ func (m *Route) Params(r *http.Request) map[string]string {
 
 // matchParams match route params
 func (m *Route) matchParams(path string) (string, string, bool) {
+	var key string
 	for _, p := range m.prefixes {
 		if strings.HasPrefix(path, p.prefix) {
 			r := path[len(p.prefix):]
@@ -289,7 +290,6 @@ func (m *Route) matchParams(path string) (string, string, bool) {
 				count := strings.Count(r, "/")
 				if count+1 == len(v.match) {
 					form := strings.Split(r, "/")
-					key := ""
 					for i := 0; i < len(form); i++ {
 						if v.match[i] != "" {
 							if i > 0 {
@@ -313,9 +313,8 @@ func (m *Route) matchParams(path string) (string, string, bool) {
 
 // parseParams parse params
 func (m *Route) parseParams(pattern string) (string, string, []string, map[string]string) {
-	prefix := ""
 	var match []string
-	key := ""
+	var key, prefix string
 	params := make(map[string]string)
 	if strings.Contains(pattern, ":") {
 		idx := strings.Index(pattern, ":")
