@@ -2,9 +2,9 @@ package netpoll
 
 import (
 	"errors"
+	"github.com/php2go/netpollmux/internal/buffer"
 	"net"
 	"sync"
-	"sync/atomic"
 )
 
 // ErrHandlerFunc is the error when the HandlerFunc is nil
@@ -16,27 +16,6 @@ var ErrUpgradeFunc = errors.New("Upgrade function must be not nil")
 // ErrServeFunc is the error when the Serve func is nil
 
 var ErrServeFunc = errors.New("Serve function must be not nil")
-
-var (
-	buffers = sync.Map{}
-	assign  int32
-)
-
-func assignPool(size int) *sync.Pool {
-	for {
-		if p, ok := buffers.Load(size); ok {
-			return p.(*sync.Pool)
-		}
-		if atomic.CompareAndSwapInt32(&assign, 0, 1) {
-			var pool = &sync.Pool{New: func() interface{} {
-				return make([]byte, size)
-			}}
-			buffers.Store(size, pool)
-			atomic.StoreInt32(&assign, 0)
-			return pool
-		}
-	}
-}
 
 // Context is returned by Upgrade for serving.
 type Context interface{}
@@ -113,7 +92,7 @@ type context struct {
 	writing sync.Mutex
 	upgrade bool
 	conn    net.Conn
-	pool    *sync.Pool
+	pool    *buffer.Pool
 	buffer  []byte
 }
 
@@ -144,7 +123,7 @@ func (h *DataHandler) Upgrade(conn net.Conn) (Context, error) {
 	if h.NoShared {
 		ctx.buffer = make([]byte, h.BufferSize)
 	} else {
-		ctx.pool = assignPool(h.BufferSize)
+		ctx.pool = buffer.AssignPool(h.BufferSize)
 	}
 	return ctx, nil
 }
@@ -160,7 +139,7 @@ func (h *DataHandler) Serve(ctx Context) error {
 	if h.NoShared {
 		buf = c.buffer
 	} else {
-		buf = c.pool.Get().([]byte)
+		buf = c.pool.GetBuffer()
 	}
 	if c.upgrade {
 		c.reading.Lock()
@@ -171,7 +150,7 @@ func (h *DataHandler) Serve(ctx Context) error {
 	}
 	if err != nil {
 		if !h.NoShared {
-			c.pool.Put(buf)
+			c.pool.PutBuffer(buf)
 		}
 		return err
 	}
@@ -189,7 +168,7 @@ func (h *DataHandler) Serve(ctx Context) error {
 		c.writing.Unlock()
 	}
 	if !h.NoShared {
-		c.pool.Put(buf)
+		c.pool.PutBuffer(buf)
 	}
 	return err
 }
