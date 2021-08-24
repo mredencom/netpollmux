@@ -5,6 +5,7 @@ package netpoll
 
 import (
 	"errors"
+	"github.com/php2go/netpollmux/internal/buffer"
 	"io"
 	"net"
 	"os"
@@ -727,9 +728,9 @@ func genericReadFrom(w io.Writer, r io.Reader, remain int64) (n int64, err error
 	} else if remain > bufferSize {
 		remain = bufferSize
 	}
-	pool := assignPool(int(remain))
-	buf := pool.Get().([]byte)
-	defer pool.Put(buf)
+	pool := buffer.AssignPool(int(remain))
+	buf := pool.GetBuffer()
+	defer pool.PutBuffer(buf)
 	var nr int
 	nr, err = r.Read(buf)
 	if err != nil {

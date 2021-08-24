@@ -2,18 +2,19 @@ package netpoll
 
 import (
 	"errors"
+	"github.com/php2go/netpollmux/internal/buffer"
 	"net"
 	"testing"
 	"time"
 )
 
 func TestAssignPool(t *testing.T) {
-	p := assignPool(1024)
-	b := p.Get().([]byte)
+	p := buffer.AssignPool(1024)
+	b := p.GetBuffer()
 	if len(b) < 1024 {
 		t.Error(len(b))
 	}
-	assignPool(1024)
+	buffer.AssignPool(1024)
 }
 
 func TestNewHandler(t *testing.T) {
