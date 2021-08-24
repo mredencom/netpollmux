@@ -12,25 +12,25 @@ type Level int
 
 const (
 	//DebugLevel defines the level of debug in test environments.
-	DebugLevel Level = 1
+	DebugLevel Level = 1 << iota
 	//TraceLevel defines the level of trace in test environments.
-	TraceLevel Level = 2
+	TraceLevel
 	//AllLevel defines the lowest level in production environments.
-	AllLevel Level = 3
+	AllLevel
 	//InfoLevel defines the level of info.
-	InfoLevel Level = 4
+	InfoLevel
 	//NoticeLevel defines the level of notice.
-	NoticeLevel Level = 5
+	NoticeLevel
 	//WarnLevel defines the level of warn.
-	WarnLevel Level = 6
+	WarnLevel
 	//ErrorLevel defines the level of error.
-	ErrorLevel Level = 7
+	ErrorLevel
 	//PanicLevel defines the level of panic.
-	PanicLevel Level = 8
+	PanicLevel
 	//FatalLevel defines the level of fatal.
-	FatalLevel Level = 9
+	FatalLevel
 	//OffLevel defines the level of no log.
-	OffLevel Level = 10
+	OffLevel
 )
 
 var (
@@ -51,19 +51,11 @@ var (
 
 // Logger defines the logger.
 type Logger struct {
-	prefix       string
-	out          io.Writer
-	level        Level
-	microseconds int
-	debugLogger  *log.Logger
-	traceLogger  *log.Logger
-	allLogger    *log.Logger
-	infoLogger   *log.Logger
-	noticeLogger *log.Logger
-	warnLogger   *log.Logger
-	errorLogger  *log.Logger
-	panicLogger  *log.Logger
-	fatalLogger  *log.Logger
+	prefix                                                                                                           string
+	out                                                                                                              io.Writer
+	level                                                                                                            Level
+	microseconds                                                                                                     int
+	debugLogger, traceLogger, allLogger, infoLogger, noticeLogger, warnLogger, errorLogger, panicLogger, fatalLogger *log.Logger
 }
 
 // New creates a new Logger.
