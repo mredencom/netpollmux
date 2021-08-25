@@ -2,9 +2,10 @@ package netpoll
 
 import (
 	"errors"
-	"github.com/php2go/netpollmux/internal/buffer"
 	"net"
 	"sync"
+
+	"github.com/php2go/netpollmux/internal/buffer"
 )
 
 // ErrHandlerFunc is the error when the HandlerFunc is nil
