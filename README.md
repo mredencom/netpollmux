@@ -131,17 +131,24 @@ func main() {
 package main
 
 import (
-	"github.com/php2go/netpollmux/mux"
+	"bufio"
 	"log"
+	"net"
 	"net/http"
+	"sync"
+
+	"github.com/julienschmidt/httprouter"
+	"github.com/php2go/netpollmux/internal/logger"
+	"github.com/php2go/netpollmux/mux"
+	"github.com/php2go/netpollmux/netpoll"
 )
 
 func main() {
-	m := mux.NewRouter()
-	r := mux.NewRender()
-	r.GzipAll().DeflateAll().Charset("utf-8")
-	m.HandleFunc("/hello/:id", func(w http.ResponseWriter, req *http.Request) {
-		r.JSON(w, req, []string{"compress"}, http.StatusOK)
+	m := mux.NewRoute()
+	m.GET("/hello/:id", func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
+		pp := req.URL.Query()
+		logger.Info("query params：", params, pp)
+		mux.JSON(w, req, []string{"hello world"}, http.StatusOK)
 	})
 	log.Fatal(m.Run(":8080"))
 }
