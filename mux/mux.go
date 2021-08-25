@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/julienschmidt/httprouter"
+	"github.com/gorilla/mux"
 	"github.com/php2go/netpollmux/internal/logger"
 	"github.com/php2go/netpollmux/netpoll"
 )
@@ -17,7 +17,7 @@ var DefaultServer = NewRoute()
 
 // Route is an HTTP server.
 type Route struct {
-	*httprouter.Router
+	*mux.Router
 	Handler http.Handler
 	// TLSConfig optionally provides a TLS configuration for use
 	// by ServeTLS and ListenAndServeTLS. Note that this value is
@@ -37,7 +37,7 @@ type Route struct {
 
 // NewRoute returns a new NewRouter instance.
 func NewRoute() *Route {
-	return &Route{Router: httprouter.New()}
+	return &Route{Router: mux.NewRouter()}
 }
 
 // SetFast enables the Server to use simple request parser.
