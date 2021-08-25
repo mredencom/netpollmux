@@ -16,7 +16,8 @@ import (
 func main() {
 	m := mux.NewRoute()
 	m.GET("/hello/:id", func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
-		logger.Info("获取的参数：", params)
+		pp := req.URL.Query()
+		logger.Info("获取的参数：", params, pp)
 		mux.JSON(w, req, []string{"hello world"}, http.StatusOK)
 	})
 	log.Fatal(m.Run(":8080"))
