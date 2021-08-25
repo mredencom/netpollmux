@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"github.com/php2go/netpollmux/internal/logger"
 	"log"
 	"net"
 	"net/http"
@@ -17,9 +18,10 @@ func main() {
 
 	r.GzipAll().DeflateAll().Charset("utf-8")
 	//m := gmux.NewRouter()
-	m.HandleFunc("/hello/:id", func(w http.ResponseWriter, req *http.Request) {
-		//w.Write([]byte(`Hello World`))
-		r.JSON(w, req, []string{"compress"}, http.StatusOK)
+	m.GET("/hello/:id", func(w http.ResponseWriter, req *http.Request, params mux.Params) {
+
+		logger.Info("获取的参数：", params)
+		r.JSON(w, req, []string{"hello world"}, http.StatusOK)
 	})
 	log.Fatal(m.Run(":8080"))
 	//if err := ListenAndServe(":8080", m); err != nil {

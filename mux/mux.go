@@ -7,16 +7,17 @@ import (
 	"net/http"
 	"sync"
 
+	"github.com/julienschmidt/httprouter"
 	"github.com/php2go/netpollmux/internal/logger"
 	"github.com/php2go/netpollmux/netpoll"
 )
 
 // DefaultServer is the default HTTP server.
-var DefaultServer = NewRouter()
+var DefaultServer = NewRoute()
 
-// Router is an HTTP server.
-type Router struct {
-	*Route
+// Route is an HTTP server.
+type Route struct {
+	*httprouter.Router
 	Handler http.Handler
 	// TLSConfig optionally provides a TLS configuration for use
 	// by ServeTLS and ListenAndServeTLS. Note that this value is
@@ -34,18 +35,18 @@ type Router struct {
 	pollers   []*netpoll.Server
 }
 
-// NewRouter returns a new NewRouter instance.
-func NewRouter() *Router {
-	return &Router{Route: NewRoute()}
+// NewRoute returns a new NewRouter instance.
+func NewRoute() *Route {
+	return &Route{Router: httprouter.New()}
 }
 
 // SetFast enables the Server to use simple request parser.
-func (m *Router) SetFast(fast bool) {
+func (m *Route) SetFast(fast bool) {
 	m.fast = fast
 }
 
 // SetPoll enables the Server to use netpoll based on epoll/kqueue.
-func (m *Router) SetPoll(poll bool) {
+func (m *Route) SetPoll(poll bool) {
 	m.poll = poll
 }
 
@@ -54,7 +55,7 @@ func (m *Router) SetPoll(poll bool) {
 // Accepted connections are configured to enable TCP keep-alives.
 //
 // Run always returns a non-nil error.
-func (m *Router) Run(addr string) error {
+func (m *Route) Run(addr string) error {
 	ln, err := net.Listen("tcp", addr)
 	if err != nil {
 		logger.Error(err.Error())
@@ -65,7 +66,7 @@ func (m *Router) Run(addr string) error {
 }
 
 // RunTLS is like Run but with a cert file and a key file.
-func (m *Router) RunTLS(addr string, certFile, keyFile string) error {
+func (m *Route) RunTLS(addr string, certFile, keyFile string) error {
 	ln, err := net.Listen("tcp", addr)
 	if err != nil {
 		return err
@@ -82,7 +83,7 @@ func RunUnix(file string) error {
 // new service goroutine for each, or registering the conn fd to poll
 // that will trigger the fd to read requests and then call handler
 // to reply to them.
-func (m *Router) Serve(l net.Listener) error {
+func (m *Route) Serve(l net.Listener) error {
 	return m.serve(l, m.TLSConfig)
 }
 
@@ -99,7 +100,7 @@ func (m *Router) Serve(l net.Listener) error {
 //
 // ServeTLS always returns a non-nil error. After Shutdown or Close, the
 // returned error is ErrServerClosed.
-func (m *Router) ServeTLS(l net.Listener, certFile, keyFile string) error {
+func (m *Route) ServeTLS(l net.Listener, certFile, keyFile string) error {
 	config := m.TLSConfig
 	if config == nil {
 		config = &tls.Config{}
@@ -119,7 +120,7 @@ func (m *Router) ServeTLS(l net.Listener, certFile, keyFile string) error {
 	return m.serve(l, config)
 }
 
-func (m *Router) serve(l net.Listener, config *tls.Config) error {
+func (m *Route) serve(l net.Listener, config *tls.Config) error {
 	if m.poll {
 		var handler = m.Handler
 		if handler == nil {
@@ -217,7 +218,7 @@ func (m *Router) serve(l net.Listener, config *tls.Config) error {
 }
 
 // Close closes the HTTP server.
-func (m *Router) Close() error {
+func (m *Route) Close() error {
 	m.mut.Lock()
 	defer m.mut.Unlock()
 	for _, lis := range m.listeners {
@@ -232,7 +233,7 @@ func (m *Router) Close() error {
 	return nil
 }
 
-func (m *Router) serveConn(conn net.Conn) {
+func (m *Route) serveConn(conn net.Conn) {
 	defer conn.Close()
 	reader := bufio.NewReader(conn)
 	rw := bufio.NewReadWriter(reader, bufio.NewWriter(conn))
@@ -254,7 +255,7 @@ func (m *Router) serveConn(conn net.Conn) {
 	}
 }
 
-func (m *Router) serveFastConn(conn net.Conn) {
+func (m *Route) serveFastConn(conn net.Conn) {
 	defer conn.Close()
 	reader := bufio.NewReader(conn)
 	rw := bufio.NewReadWriter(reader, bufio.NewWriter(conn))
