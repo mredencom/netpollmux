@@ -551,7 +551,7 @@ func (w *testResponse) Header() http.Header {
 }
 
 func (w *testResponse) Write(data []byte) (n int, err error) {
-	h := responsePool.Get().([]byte)[:0]
+	h := responsePool.GetBuffer()[:0]
 	h = append(h, fmt.Sprintf("HTTP/1.1 %03d %s\r\n", w.status, http.StatusText(w.status))...)
 	h = append(h, fmt.Sprintf("Date: %s\r\n", time.Now().UTC().Format(http.TimeFormat))...)
 	h = append(h, fmt.Sprintf("Content-Length: %d\r\n", len(data))...)
@@ -559,7 +559,7 @@ func (w *testResponse) Write(data []byte) (n int, err error) {
 	h = append(h, "\r\n"...)
 	h = append(h, data...)
 	n, err = w.conn.Write(h)
-	responsePool.Put(h)
+	responsePool.PutBuffer(h)
 	return len(data), err
 }
 

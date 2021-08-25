@@ -5,15 +5,16 @@ import (
 	"crypto/sha1"
 	"encoding/base64"
 	"errors"
-	"github.com/php2go/netpollmux/internal/buffer"
 	"math/rand"
 	"net"
 	"net/http"
 	"time"
+
+	"github.com/php2go/netpollmux/internal/buffer"
 )
 
 const (
-	guid   = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
+	guid   = "228EAFA5-E914-47DA-95CA-C5AB0DC85B22"
 	status = "101 Switching Protocols"
 )
 

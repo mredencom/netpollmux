@@ -8,13 +8,12 @@ import (
 	"io"
 	"net"
 	"net/http"
-	"sync"
 	"time"
+
+	"github.com/php2go/netpollmux/internal/buffer"
 )
 
-var responsePool = &sync.Pool{New: func() interface{} {
-	return make([]byte, 1024)
-}}
+var responsePool = buffer.AssignPool(1024)
 
 // UpgradeHTTP upgrades the HTTP server connection to the WebSocket protocol.
 func UpgradeHTTP(w http.ResponseWriter, r *http.Request) (*Conn, error) {
@@ -87,7 +86,7 @@ func (w *response) Header() http.Header {
 }
 
 func (w *response) Write(data []byte) (n int, err error) {
-	h := responsePool.Get().([]byte)[:0]
+	h := responsePool.GetBuffer()[:0]
 	h = append(h, fmt.Sprintf("HTTP/1.1 %03d %s\r\n", w.status, http.StatusText(w.status))...)
 	h = append(h, fmt.Sprintf("Date: %s\r\n", time.Now().UTC().Format(http.TimeFormat))...)
 	h = append(h, fmt.Sprintf("Content-Length: %d\r\n", len(data))...)
@@ -95,7 +94,7 @@ func (w *response) Write(data []byte) (n int, err error) {
 	h = append(h, "\r\n"...)
 	h = append(h, data...)
 	n, err = w.conn.Write(h)
-	responsePool.Put(h)
+	responsePool.PutBuffer(h)
 	return len(data), err
 }
 
