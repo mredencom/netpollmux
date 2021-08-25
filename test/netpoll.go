@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"github.com/julienschmidt/httprouter"
 	"github.com/php2go/netpollmux/internal/logger"
 	"log"
 	"net"
@@ -13,13 +14,10 @@ import (
 )
 
 func main() {
-	m := mux.NewRouter()
+	m := mux.NewRoute()
 	r := mux.NewRender()
-
 	r.GzipAll().DeflateAll().Charset("utf-8")
-	//m := gmux.NewRouter()
-	m.GET("/hello/:id", func(w http.ResponseWriter, req *http.Request, params mux.Params) {
-
+	m.GET("/hello/:id", func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
 		logger.Info("获取的参数：", params)
 		r.JSON(w, req, []string{"hello world"}, http.StatusOK)
 	})
