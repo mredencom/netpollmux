@@ -137,7 +137,6 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/julienschmidt/httprouter"
 	"github.com/php2go/netpollmux/internal/logger"
 	"github.com/php2go/netpollmux/mux"
 	"github.com/php2go/netpollmux/netpoll"
