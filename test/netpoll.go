@@ -21,7 +21,7 @@ func main() {
 	})
 	log.Fatal(m.Run(":8080"))
 	//if err := ListenAndServe(":8080", m); err != nil {
-	//	log.Fatal("启动失败")
+	//	log.Fatal("fail")
 	//}
 }
 
