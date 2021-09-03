@@ -1,3 +1,3 @@
 package netpollmux
 
-const version = "v0.0.4"
+const version = "v1.0.1"
